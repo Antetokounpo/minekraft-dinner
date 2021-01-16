@@ -34,6 +34,9 @@ build:
 debug: CXXFLAGS += -DDEBUG -g
 debug: all
 
+profile: CXXFLAGS += -pg
+profile: debug
+
 release: CXXFLAGS += -O2
 release: all
 

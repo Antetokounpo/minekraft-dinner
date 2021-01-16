@@ -13,7 +13,6 @@ Texture::Texture()
 
 Texture::~Texture()
 {
-    std::cout << "kasjd" << std::endl;
     glDeleteTextures(1, &texture_id);
 }
 

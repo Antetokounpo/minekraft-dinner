@@ -8,6 +8,7 @@
 #include<engine/texture.hpp>
 #include<engine/shader.hpp>
 #include<terrain/chunk.hpp>
+#include<terrain/terrain.hpp>
 
 #include "camera.hpp"
 #include "texture_manager.hpp"
@@ -19,7 +20,8 @@ class Renderer
         ~Renderer();
 
         void update();
-        void render_chunk(Chunk chunk);
+        void render_terrain(Terrain& terrain);
+        void render_chunk(const std::vector<std::tuple<int, int, int>>& blocks, const Chunk& chunk);
 
         void load_model(const std::string& filename);
         void load_shader(const std::string& vertex_filename, const std::string& fragment_filename);
@@ -31,6 +33,7 @@ class Renderer
     protected:
         Camera camera;
         glm::vec3 object_position;
+        int render_distance;
 
         Model model;
         TextureManager texture_manager;

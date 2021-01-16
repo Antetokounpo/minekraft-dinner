@@ -1,17 +1,128 @@
 #include "terrain.hpp"
 
+#include<algorithm>
+
 #include "chunk.hpp"
 
 Terrain::Terrain(){}
 
 Terrain::~Terrain(){}
 
-Chunk Terrain::get_chunk(int x, int y)
+Chunk& Terrain::get_chunk(int x, int y)
 {
-    chunks[x][y];
+    if(!is_chunk(x, y))
+        generate(x, y);
+    return chunks[x][y];
 }
 
-void Terrain::generate()
+unsigned int Terrain::get_block(int x, int y, int z)
 {
-    
+    if(y < 0 || y > 255)
+        return 0;
+    return get_chunk(x/16, z/16).get_block((unsigned)x % 16, y, (unsigned)z % 16);
+}
+
+bool Terrain::is_chunk(int x, int y)
+{
+    return chunks[x].count(y);
+}
+
+void Terrain::generate(int x, int y)
+{
+    chunks[x][y] = Chunk();
+    chunks[x][y].set_position(x, y);
+    chunks[x][y].generate();
+}
+
+std::vector<std::tuple<int, int, int>> Terrain::get_visible_blocks(int u, int v)
+{
+    if(!visible_blocks_per_chunk[u].count(v))
+        compute_visible_blocks(u, v);
+    return visible_blocks_per_chunk[u][v];
+}
+
+void Terrain::compute_visible_blocks(int u, int v)
+{
+    const Chunk& current_chunk = get_chunk(u, v);
+
+    //int x = u * 16;
+    //int z = v * 16;
+
+    int o, p;
+
+    std::vector<std::tuple<int, int, int>> blocks_to_render;
+    for(int i = 0; i<16; ++i)
+    {
+        for(int j = 0; j<256; ++j)
+        {
+            for(int k = 0; k<16; ++k)
+            {
+                o = !i ? -1 : 1;
+                p = !k ? -1 : 1;
+
+                if(current_chunk.get_block(i, j, k) == 0)
+                    continue;
+
+                // Ce serait plus simple à écrire comme ça, mais c'est 10x plus lent
+                /*
+                bool p = !get_block(x+i-1, j, z+k) || !get_block(x+i+1, j, z+k) ||
+                         !get_block(x+i, j-1, z+k) || !get_block(x+i, j+1, z+k) ||
+                         !get_block(x+i, j, z+k-1) || !get_block(x+i, j, z+k+1);
+
+                if(p)
+                    blocks_to_render.push_back(std::make_tuple(i, j, k));
+                */
+
+                if(i % 15 == 0)
+                {
+                    if(!(get_chunk(u+o, v).get_block((i == 0) ? 15 : 0, j , k)) || !(current_chunk.get_block(i-o, j, k)))
+                    {
+                        blocks_to_render.push_back(std::make_tuple(i, j, k));
+                        continue;
+                    }
+                }
+                else if(!current_chunk.get_block(i-1, j, k) || !current_chunk.get_block(i+1, j, k))
+                {
+                        blocks_to_render.push_back(std::make_tuple(i, j, k));
+                        continue;
+                }
+
+                if(j % 255 == 0)
+                {
+                    blocks_to_render.push_back(std::make_tuple(i, j, k));
+                    continue;
+                }
+                else if(!current_chunk.get_block(i, j-1, k) || !current_chunk.get_block(i, j+1, k))
+                {
+                    blocks_to_render.push_back(std::make_tuple(i, j, k));
+                    continue;
+                }
+
+                if(k % 15 == 0)
+                {
+                    if(!(get_chunk(u, v+p).get_block(i, j, (k == 0) ? 15 : 0)) || !current_chunk.get_block(i, j, k-p))
+                    {
+                        blocks_to_render.push_back(std::make_tuple(i, j, k));
+                        continue;
+                    }
+                }
+                else if(!current_chunk.get_block(i, j, k-1) || !current_chunk.get_block(i, j, k+1))
+                {
+                    blocks_to_render.push_back(std::make_tuple(i, j, k));
+                    continue;
+                }
+            }
+        }
+    }
+
+    std::sort(blocks_to_render.begin(), blocks_to_render.end(),
+        [&current_chunk](std::tuple<int, int, int> a, std::tuple<int, int, int> b)
+        {
+            const auto& [x, y, z] = a;
+            const auto& [i, j, k] = b;
+            return current_chunk.get_block(x, y, z) < current_chunk.get_block(i, j, k);
+        }
+    );
+
+    visible_blocks_per_chunk[u][v] = blocks_to_render;
 }

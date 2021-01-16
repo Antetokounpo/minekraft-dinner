@@ -8,8 +8,6 @@
 #include<glm/gtc/matrix_transform.hpp>
 #include<SDL2/SDL.h>
 
-#include<iostream> // debug
-
 Camera::Camera(SDL_Window* win)
 {
     window = win;
@@ -22,6 +20,7 @@ Camera::Camera(SDL_Window* win)
     direction = glm::vec3(1.0f, 0.0f, 0.0f);
     right = glm::vec3(0.0f, 0.0f, 1.0f);
     up = glm::vec3(0.0f, 1.0f, 0.0f);
+    walking_direction = glm::vec3(1.0f, 0.0f, 0.0f);
 
     speed = 0.015f; // speed at which the camera moves
 
@@ -67,9 +66,9 @@ void Camera::update()
 
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_W])
-        position += direction * movement;
+        position += walking_direction * movement;
     if(state[SDL_SCANCODE_S])
-        position -= direction * movement;
+        position -= walking_direction * movement;
     if(state[SDL_SCANCODE_D])
         position += right * movement;
     if(state[SDL_SCANCODE_A])
@@ -92,6 +91,10 @@ void Camera::rotate()
     right = glm::vec3(sin(horizontal_angle - M_PI/2.0f),
                       0.0f,
                       cos(horizontal_angle - M_PI/2.0f));
+
+    walking_direction = glm::vec3(sin(horizontal_angle),
+                                  0.0f,
+                                  cos(horizontal_angle));
 }
 
 glm::vec3& Camera::get_position()

@@ -10,5 +10,6 @@ typedef struct Block
 
 
 static Block BLOCK_TYPES[] = {
-    {"Dirt", "res/tex/dirt.png"}
+    {"Dirt", "res/tex/dirt.png"},
+    {"Stone", "res/tex/stone.png"}
 };

@@ -14,6 +14,7 @@
 #include "engine/loaders/objloader.hpp"
 
 #include "terrain/chunk.hpp"
+#include "terrain/terrain.hpp"
 
 int main()
 {
@@ -46,8 +47,7 @@ int main()
     renderer.load_model("res/cube.obj");
     renderer.init_textures();
     renderer.load_shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
-    Chunk chunk;
-    chunk.generate();
+    Terrain terrain;
 
     SDL_GL_SetSwapInterval(1);
     SDL_ShowCursor(SDL_DISABLE);
@@ -68,7 +68,7 @@ int main()
         
         renderer.update();
 
-        renderer.render_chunk(chunk);
+        renderer.render_terrain(terrain);
         SDL_GL_SwapWindow(window);
         //std::cout << 1000.0f/(SDL_GetTicks() - t) << " fps\n";
         t = SDL_GetTicks();

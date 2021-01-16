@@ -2,17 +2,22 @@
 
 #include<cstdlib>
 
-Chunk::Chunk()
-{
-    for(unsigned int i = 0; i<16; ++i)
-        for(unsigned int j = 0; j<16; ++j)
-            for(unsigned int k = 0; k<256; ++k)
-                blocks[i][j][k] = 0;
-}
+Chunk::Chunk(){}
 
 Chunk::~Chunk(){}
 
-unsigned int Chunk::get_block(unsigned int x, unsigned int y, unsigned int z)
+void Chunk::set_position(int i, int k)
+{
+    x = i;
+    z = k;
+}
+
+std::tuple<int, int> Chunk::get_position() const
+{
+    return std::make_tuple(x, z);
+}
+
+unsigned int Chunk::get_block(unsigned int x, unsigned int y, unsigned int z) const
 {
     return blocks[x][y][z];
 }
@@ -23,10 +28,11 @@ void Chunk::generate()
         for(int j = 0; j<256; ++j)
             for(int k = 0; k<16; ++k)
             {
-                if(rand() % 2)
-                    blocks[i][j][k] = 1;
+                if(j < 50)
+                {
+                    blocks[i][j][k] = rand() % 2 + 1;
+                }
                 else
                     blocks[i][j][k] = 0;
             }
 }
-
