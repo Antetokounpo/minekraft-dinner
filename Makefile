@@ -25,7 +25,7 @@ $(BUILD)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -o $(BUILD)/$(TARGET) $^ $(LDFLAGS)
 
-.PHONY: all build clean debug release
+.PHONY: all build clean debug release run
 
 build:
 	@mkdir -p $(BUILD)
@@ -33,6 +33,7 @@ build:
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: all
+	gdb $(BUILD)/$(TARGET)
 
 profile: CXXFLAGS += -pg
 profile: debug
@@ -42,3 +43,6 @@ release: all
 
 clean:
 	-@rm -rvf $(BUILD)/*
+
+run:
+	$(BUILD)/$(TARGET)
