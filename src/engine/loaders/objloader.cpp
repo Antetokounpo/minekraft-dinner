@@ -28,7 +28,7 @@ void OBJLoader::store_float_in_vector(std::vector<float>& v, std::vector<std::st
         v.push_back(std::stof(i));
 }
 
-void OBJLoader::load_file(const std::string& filename, std::vector<float>& vertices, std::vector<float>& uvs, std::vector<float>& normals, std::vector<int>& indices)
+void OBJLoader::load_file(const std::string& filename, std::vector<float>& vertices, std::vector<float>& uvs, std::vector<float>& normals, std::vector<unsigned int>& indices)
 {
     std::vector<float> temp_uvs;
     std::vector<float> temp_normals;

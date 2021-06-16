@@ -20,7 +20,7 @@ Model::~Model()
         glDeleteBuffers(1, &vbo);
 }
 
-void Model::create_EBO(int indices[], size_t s_indices)
+void Model::create_EBO(unsigned int indices[], size_t s_indices)
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, s_indices, indices, GL_STATIC_DRAW);
@@ -41,7 +41,7 @@ void Model::create_VBO(float data[], size_t s_data, unsigned int index, unsigned
     glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbind buffer
 }
 
-void Model::load(float vertices[], size_t s_vertices, float uvs[], size_t s_uvs, float normals[], size_t s_normals, int indices[], size_t s_indices)
+void Model::load(float vertices[], size_t s_vertices, float uvs[], size_t s_uvs, float normals[], size_t s_normals, unsigned int indices[], size_t s_indices)
 {
     glBindVertexArray(vao);
 
@@ -71,7 +71,7 @@ void Model::render()
     glBindVertexArray(0); // Unbind VAO
 }
 
-void Model::start()
+void Model::start() const
 {
     glBindVertexArray(vao);
     glEnableVertexAttribArray(0);
@@ -80,7 +80,7 @@ void Model::start()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 }
 
-void Model::stop()
+void Model::stop() const
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); // Unbind EBO
     glDisableVertexAttribArray(0);
@@ -89,7 +89,7 @@ void Model::stop()
     glBindVertexArray(0); // Unbind VAO
 }
 
-int Model::get_vertex_count()
+int Model::get_vertex_count() const
 {
     return vertex_count;
 }

@@ -14,7 +14,7 @@ Camera::Camera(SDL_Window* win)
 
     fov = 90.0f; // Field of view
 
-    position = glm::vec3(0.0f); // set initial position
+    position = glm::vec3(0.0f, 0.0f, 0.0f); // set initial position
     // Si on set pas ces vecteurs, ça peut donner des nan quand on calcule les angles
     // et donc rien ne render
     direction = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -26,7 +26,7 @@ Camera::Camera(SDL_Window* win)
 
     vertical_angle = 0.0f;
     horizontal_angle = 0.0f;
-    sensitivity = 0.0005f; // speed at which the camera rotates
+    sensitivity = 0.0003f; // speed at which the camera rotates
 
     // Get window size
     int w, h;
@@ -109,5 +109,5 @@ glm::mat4 Camera::get_view_matrix()
 
 glm::mat4 Camera::get_projection_matrix()
 {
-    return glm::perspective(glm::radians(fov), (float)width/(float)height, 0.1f, 100.0f); // FOV matrix
+    return glm::perspective(glm::radians(fov), (float)width/(float)height, 0.1f, 1000.0f); // FOV matrix
 }

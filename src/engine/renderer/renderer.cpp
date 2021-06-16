@@ -7,39 +7,42 @@
 
 #include<engine/loaders/objloader.hpp>
 #include<terrain/block.hpp>
+#include<terrain/chunk.hpp>
 
 Renderer::Renderer(SDL_Window* win) : camera(win)
 {
-    render_distance = 3;
+    render_distance = 5;
 }
 
 Renderer::~Renderer(){}
 
-void Renderer::render_chunk(const std::vector<std::tuple<int, int, int>>& blocks, const Chunk& chunk)
+void Renderer::render_chunk(const Chunk& chunk)
 {
-    for(auto& block : blocks)
-    {
-        auto&[i, j, k] = block;
-        int block_id = chunk.get_block(i, j, k);
+    chunk.start();
+    texture_manager.start_texture(0);
+    const auto& [u, v] = chunk.get_position();
 
-        const auto& [u, v] = chunk.get_position();
+    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {u*16, 0, v*16}), "model");
+    glDrawElements(GL_TRIANGLES, chunk.get_vertex_count(), GL_UNSIGNED_INT, 0);
 
-        glm::vec3 object_position = {u*16+i, j, v*16+k};
+    chunk.stop();
+    texture_manager.stop_texture();
+}
 
-        if(block_id - 1 != texture_manager.get_active_texture())
-        {
-            texture_manager.stop_texture();
-            texture_manager.start_texture(block_id-1);
-        }
+void Renderer::render()
+{
+    model.start();
+    texture_manager.start_texture(0);
+    
+    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {0, 0, 0}),  "model");
+    glDrawElements(GL_TRIANGLES, model.get_vertex_count(), GL_UNSIGNED_INT, 0);
 
-        shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), object_position), "model");
-        glDrawElements(GL_TRIANGLES, model.get_vertex_count(), GL_UNSIGNED_INT, 0);
-    }
+    model.stop();
+    texture_manager.stop_texture();
 }
 
 void Renderer::render_terrain(Terrain& terrain)
 {
-    model.start();
     int r = camera.get_position()[0]/16;
     int s = camera.get_position()[2]/16;
     std::vector<std::tuple<int, int>> chunks_to_render;
@@ -52,14 +55,17 @@ void Renderer::render_terrain(Terrain& terrain)
         }
     }
 
+    bool generated = false;
     for(auto& [u, v] : chunks_to_render)
     {
-        std::vector<std::tuple<int, int, int>> blocks_to_render = terrain.get_visible_blocks(u, v);
-        const Chunk& chunk = terrain.get_chunk(u, v);
-        render_chunk(blocks_to_render, chunk);
-    }
+        std::vector<std::tuple<int, int, int, int>> blocks_to_render = terrain.get_visible_faces(u, v);
+        if(!terrain.is_chunk(u, v)) generated = true;
+        Chunk& chunk = terrain.get_chunk(u, v);
 
-    model.stop();
+        if(generated) // 1 seule génération par call
+            break;
+        render_chunk(chunk);
+    }
 }
 
 void Renderer::update()
@@ -67,7 +73,6 @@ void Renderer::update()
     camera.update();
     shader.set_uniform_variable(camera.get_view_matrix(), "view");
     shader.set_uniform_variable(camera.get_projection_matrix(), "projection");
-    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), object_position),  "model");
 }
 
 void Renderer::load_model(const std::string& filename)
@@ -75,11 +80,15 @@ void Renderer::load_model(const std::string& filename)
     std::vector<float> vertices;
     std::vector<float> uvs;
     std::vector<float> normals;
-    std::vector<int> indices;
-
+    std::vector<unsigned int> indices;
 
     OBJLoader::load_file(filename, vertices, uvs, normals, indices);
     model.load(&vertices[0], vertices.size()*sizeof(vertices[0]), &uvs[0], uvs.size()*sizeof(uvs[0]), &normals[0], normals.size()*sizeof(normals[0]), &indices[0], indices.size()*sizeof(indices[0]));
+}
+
+void Renderer::load_texture(const std::string& filename)
+{
+    texture.load(filename);
 }
 
 void Renderer::load_shader(const std::string& vertex_filename, const std::string& fragment_filename)

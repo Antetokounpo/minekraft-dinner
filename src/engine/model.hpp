@@ -10,14 +10,16 @@ class Model
     public:
         Model();
         ~Model();
-        void load(float vertices[], size_t s_vertices, float uvs[], size_t s_uvs, float normals[], size_t s_normals, int indices[], size_t s_indices);
+        void load(float vertices[], size_t s_vertices, float uvs[], size_t s_uvs, float normals[], size_t s_normals, unsigned int indices[], size_t s_indices);
         void render();
-        void start();
-        void stop();
-        int get_vertex_count();
+        void start() const;
+        void stop() const;
+        int get_vertex_count() const;
     private:
+        Model(const Model& m1); // Copy constructor
+        Model& operator=(const Model& m); // Copy assignement operator
         void create_VBO(float data[], size_t s_data, unsigned int index, unsigned int coord_format);
-        void create_EBO(int indices[], size_t s_indices);
+        void create_EBO(unsigned int indices[], size_t s_indices);
 
         GLuint vao;
         GLuint ebo;

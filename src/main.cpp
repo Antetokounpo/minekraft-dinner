@@ -16,6 +16,12 @@
 #include "terrain/chunk.hpp"
 #include "terrain/terrain.hpp"
 
+void opengl_debug_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+{
+    std::cout << "OpenGL error: ";
+    std::cout << message << '\n';
+}
+
 int main()
 {
     if(SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -44,15 +50,20 @@ int main()
     IMG_Init(IMG_INIT_PNG);
 
     Renderer renderer(window);
-    renderer.load_model("res/cube.obj");
     renderer.init_textures();
     renderer.load_shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
     Terrain terrain;
+    terrain.set_seed(1234);
 
     SDL_GL_SetSwapInterval(1);
     SDL_ShowCursor(SDL_DISABLE);
 
     glEnable(GL_DEPTH_TEST); // So triangles don't "overlap"
+
+    #ifdef DEBUG
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(opengl_debug_cb, 0);
+    #endif
 
     bool quit = false;
     while(!quit)
@@ -65,10 +76,11 @@ int main()
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(1, 1, 0, 1);
-        
+
         renderer.update();
 
         renderer.render_terrain(terrain);
+
         SDL_GL_SwapWindow(window);
         //std::cout << 1000.0f/(SDL_GetTicks() - t) << " fps\n";
         t = SDL_GetTicks();
