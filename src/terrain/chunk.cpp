@@ -73,7 +73,7 @@ void Chunk::generate(Perlin& perlin)
     for(int i = 0; i<16; ++i)
         for(int k = 0; k<16; ++k)
         {
-            double h = perlin.perlin((double)x+((double)i/16), (double)z+((double)k/16));
+            double h = perlin.perlin((double)x+((double)i/16), (double)z+((double)k/16), 0.0f);
             for(int j = 0; j<256; ++j)
             {
                 if(j < h*10)

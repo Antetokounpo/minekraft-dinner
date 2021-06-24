@@ -1,30 +1,25 @@
 #include "perlin.hpp"
 
-#include<vector>
-#include<algorithm>
-#include<cstdlib>
-#include<cmath>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <cmath>
 
-#include<iostream>
+Perlin::Perlin() {}
 
-Perlin::Perlin()
-{
-    repeat = 0;
-}
-
-Perlin::~Perlin(){}
+Perlin::~Perlin() {}
 
 void Perlin::set_seed(unsigned int seed)
 {
     std::vector<unsigned int> permutation;
-    for(int i = 0; i<256; ++i)
+    for (int i = 0; i < 256; ++i)
         permutation.push_back(i);
 
     std::srand(seed);
     std::random_shuffle(permutation.begin(), permutation.end());
 
     p.clear();
-    for(int i = 0; i<512; ++i)
+    for (int i = 0; i < 512; ++i)
         p.emplace_back(permutation[i % 256]);
 }
 
@@ -33,38 +28,56 @@ double Perlin::fade(double t)
     return 6*std::pow(t, 5) - 15*std::pow(t, 4) + 10*std::pow(t, 3);
 }
 
-double Perlin::grad(int hash, double x, double y)
+double Perlin::lerp(double x, double a, double b)
 {
-    return ((hash & 1) ? x : -x) + ((hash & 2) ? y : -y);
+    return x*(b - a) + a;
 }
 
-double Perlin::lerp(double a, double b, double x)
+double Perlin::grad(int hash, double x, double y, double z)
 {
-    return (b - a)*x + a;
+    int h = hash & 15;                      
+    double u = h<8 ? x : y;
+    double v = h<4 ? y : h==12||h==14 ? x : z;
+
+    return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
 }
 
-double Perlin::perlin(double x, double y)
+double Perlin::noise(double x, double y, double z)
 {
-    int xi = (unsigned)x & 255;
-    int yi = (unsigned)y & 255;
+    int xi = (int)floor(x) & 255;
+    int yi = (int)floor(y) & 255;
+    int zi = (int)floor(z) & 255;
 
-    double xf = x - (int)x;
-    double yf = y - (int)y;
+    double xf = x - floor(x);
+    double yf = y - floor(y);                                
+    double zf = z - floor(z);
 
     double u = fade(xf);
     double v = fade(yf);
+    double w = fade(zf);
 
-    int aa, ab, ba, bb;
+    int a = p[xi]+yi;
+    int b = p[xi+1]+yi;
 
-    aa = p[p[xi]+yi];
-    ab = p[p[xi]+yi+1];
-    ba = p[p[xi+1]+yi];
-    bb = p[p[xi+1]+yi+1];
+    int aa = p[a]+zi;
+    int ab = p[a+1]+zi;
+    int ba = p[b]+zi;
+    int bb = p[b+1]+zi;
 
-    double x1, x2;
+    return lerp(w, lerp(v, lerp(u, grad(p[aa  ], xf  , yf  , zf   ), 
+                                   grad(p[ba  ], xf-1, yf  , zf   )),
+                           lerp(u, grad(p[ab  ], xf  , yf-1, zf   ), 
+                                   grad(p[bb  ], xf-1, yf-1, zf   ))),
+                   lerp(v, lerp(u, grad(p[aa+1], xf  , yf  , zf-1 ), 
+                                   grad(p[ba+1], xf-1, yf  , zf-1 )), 
+                           lerp(u, grad(p[ab+1], xf  , yf-1, zf-1 ),
+                                   grad(p[bb+1], xf-1, yf-1, zf-1 ))));
+}
 
-    x1 = lerp(grad(aa, xf, yf), grad(ba, xf-1, yf), u);
-    x2 = lerp(grad(ab, xf, yf-1), grad(bb, xf-1, yf-1), u);
+double Perlin::perlin(double x, double y, double z)
+{
+    double n = noise(x, y, z);
 
-    return (lerp(x1, x2, v)+1)/2;
+    /* Valeur de n entre -1 et 1 */ 
+    return n * 0.5f + 0.5f;
 }

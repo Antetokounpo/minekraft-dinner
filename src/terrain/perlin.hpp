@@ -2,6 +2,8 @@
 
 #include<vector>
 
+#include<glm/vec2.hpp>
+
 class Perlin
 {
     public:
@@ -9,12 +11,12 @@ class Perlin
         ~Perlin();
 
         void set_seed(unsigned int seed);
-        double perlin(double x, double y);
+        double noise(double x, double y, double z);
+        double perlin(double x, double y, double z);
     private:
         double fade(double t);
-        double grad(int hash, double x, double y);
-        double lerp (double a, double b, double x);
+        double lerp(double x, double a, double b);
+        double grad(int hash, double x, double y, double z);
 
-        std::vector<unsigned int> p;
-        int repeat;
+        std::vector<unsigned> p;
 };
