@@ -18,7 +18,7 @@ class Terrain
         unsigned int get_block(int x, int y, int z);
         bool is_chunk(int x , int y);
         void generate(int x, int y);
-        std::vector<std::tuple<int, int, int, int>> get_visible_faces(int u, int v);
+        std::vector<Face> get_visible_faces(int u, int v);
 
     private:
         void compute_visible_faces(int u, int v);

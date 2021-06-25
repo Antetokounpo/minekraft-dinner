@@ -76,9 +76,13 @@ void Chunk::generate(Perlin& perlin)
             double h = perlin.perlin((double)x+((double)i/16), (double)z+((double)k/16), 0.0f);
             for(int j = 0; j<256; ++j)
             {
-                if(j < h*10)
+                if(j < h*25)
                 {
-                    blocks[i][j][k] = 1;
+                    if(h > 0.5f)
+                        blocks[i][j][k] = 1;
+                    else
+                        blocks[i][j][k] = 2; // Besoin de texture atlas
+                    
                 }
                 else
                     blocks[i][j][k] = 0;
@@ -93,11 +97,16 @@ void Chunk::build_mesh()
         1, 0, 3
     };
 
+    unsigned atlas_w = 160;
+    unsigned atlas_h = 160;
+    unsigned tex_w = 16;
+    unsigned tex_h = 16;
+
     std::array<float, 8> uvs = {
         0.0f, 0.0f,
-        1.0f, 1.0f,
-        0.0f, 1.0f,
-        1.0f, 0.0f
+        1.0f/(atlas_w/tex_w), 1.0f/(atlas_h/tex_h),
+        0.0f, 1.0f/(atlas_h/tex_h),
+        1.0f/(atlas_w/tex_w), 0.0f
     };
 
     std::array<float, 12> normals = {
@@ -115,7 +124,8 @@ void Chunk::build_mesh()
     unsigned cnt = 0;
     for(const auto& face : visible_faces)
     {
-        auto& [i, j, k, f] = face;
+        auto& [i, j, k, f, t] = face;
+
         std::vector<float> temp_vertices (faces[f].begin(), faces[f].end());
         for(unsigned c = 0; c<temp_vertices.size(); c += 3)
         {
@@ -124,8 +134,17 @@ void Chunk::build_mesh()
             temp_vertices[c+2] += k;
         }
 
+        std::vector<float> temp_uvs (uvs.begin(), uvs.end());
+        for(unsigned c = 0; c<temp_uvs.size(); c += 2)
+        {
+            unsigned u = t % (atlas_w/tex_w);
+            temp_uvs[c] += u * 1.0f/(atlas_w/tex_w);
+            u = t / (atlas_w/tex_w);
+            temp_uvs[c+1] += u * 1.0f/(atlas_h/tex_h);
+        }
+
         mesh_vertices.insert(mesh_vertices.end(), temp_vertices.begin(), temp_vertices.end());
-        mesh_uvs.insert(mesh_uvs.end(), uvs.begin(), uvs.end());
+        mesh_uvs.insert(mesh_uvs.end(), temp_uvs.begin(), temp_uvs.end());
         mesh_normals.insert(mesh_normals.end(), normals.begin(), normals.end());
 
         std::vector<unsigned> temp_indices(indices.begin(), indices.end());
@@ -156,13 +175,13 @@ int Chunk::get_vertex_count() const
     return chunk_mesh.get_vertex_count();
 }
 
-void Chunk::set_visible_faces(const std::vector<std::tuple<int, int, int, int>>& visible_f)
+void Chunk::set_visible_faces(const std::vector<Face>& visible_f)
 {
     visible_faces = visible_f;
     build_mesh();
 }
 
-std::vector<std::tuple<int, int, int, int>> Chunk::get_visible_faces() const
+std::vector<Face> Chunk::get_visible_faces() const
 {
     return visible_faces;
 }

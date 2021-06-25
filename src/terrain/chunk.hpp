@@ -6,6 +6,26 @@
 #include<engine/model.hpp>
 #include "perlin.hpp"
 
+enum FaceOrientation
+{
+    SUD,
+    EST,
+    NORD,
+    OUEST,
+    DESSUS,
+    DESSOUS
+};
+
+struct Face
+{
+    unsigned i;
+    unsigned j;
+    unsigned k;
+
+    FaceOrientation face;
+    unsigned texture_id;
+};
+
 class Chunk
 {
     public:
@@ -23,14 +43,14 @@ class Chunk
         void stop() const;
         int get_vertex_count() const;
 
-        std::vector<std::tuple<int, int, int, int>> get_visible_faces() const;
-        void set_visible_faces(const std::vector<std::tuple<int, int, int, int>>& visible_f);
+        std::vector<Face> get_visible_faces() const;
+        void set_visible_faces(const std::vector<Face>& visible_f);
         bool is_visible_faces() const;
     private:
         int x;
         int z;
         unsigned int blocks[16][256][16];
-        std::vector<std::tuple<int, int, int, int>> visible_faces;
+        std::vector<Face> visible_faces;
         std::vector<std::array<float, 12>> faces;
         Model chunk_mesh;
 };

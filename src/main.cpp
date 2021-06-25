@@ -50,7 +50,7 @@ int main()
     IMG_Init(IMG_INIT_PNG);
 
     Renderer renderer(window);
-    renderer.init_textures();
+    renderer.load_texture("res/tex/atlas.png");
     renderer.load_shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
     Terrain terrain;
     terrain.set_seed(1234);

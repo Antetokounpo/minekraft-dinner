@@ -19,14 +19,14 @@ Renderer::~Renderer(){}
 void Renderer::render_chunk(const Chunk& chunk)
 {
     chunk.start();
-    texture_manager.start_texture(0);
+    texture.start();
     const auto& [u, v] = chunk.get_position();
 
     shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {u*16, 0, v*16}), "model");
     glDrawElements(GL_TRIANGLES, chunk.get_vertex_count(), GL_UNSIGNED_INT, 0);
 
     chunk.stop();
-    texture_manager.stop_texture();
+    texture.stop();
 }
 
 void Renderer::render()
@@ -58,7 +58,7 @@ void Renderer::render_terrain(Terrain& terrain)
     bool generated = false;
     for(auto& [u, v] : chunks_to_render)
     {
-        std::vector<std::tuple<int, int, int, int>> blocks_to_render = terrain.get_visible_faces(u, v);
+        std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
         if(!terrain.is_chunk(u, v)) generated = true;
         Chunk& chunk = terrain.get_chunk(u, v);
 
@@ -96,14 +96,6 @@ void Renderer::load_shader(const std::string& vertex_filename, const std::string
     shader.stop();
     shader.load(vertex_filename, fragment_filename);
     shader.start();
-}
-
-void Renderer::init_textures()
-{
-    for(const auto& b : BLOCK_TYPES)
-    {
-        texture_manager.load_texture(b.texture_path);
-    }
 }
 
 glm::vec3& Renderer::get_position()

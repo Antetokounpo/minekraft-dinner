@@ -27,7 +27,6 @@ class Renderer
         void load_model(const std::string& filename);
         void load_shader(const std::string& vertex_filename, const std::string& fragment_filename);
         void load_texture(const std::string& filename);
-        void init_textures();
 
         glm::vec3& get_position();
         glm::mat4 get_view_matrix();
