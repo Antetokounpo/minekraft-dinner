@@ -98,17 +98,17 @@ void Renderer::load_shader(const std::string& vertex_filename, const std::string
     shader.start();
 }
 
-glm::vec3& Renderer::get_position()
+const glm::vec3& Renderer::get_position() const
 {
     return camera.get_position();
 }
 
-glm::mat4 Renderer::get_view_matrix()
+glm::mat4 Renderer::get_view_matrix() const
 {
     return camera.get_view_matrix();
 }
 
-glm::mat4 Renderer::get_projection_matrix()
+glm::mat4 Renderer::get_projection_matrix() const
 {
     return camera.get_projection_matrix();
 }

@@ -12,13 +12,14 @@ class Camera
         Camera(SDL_Window* win);
         ~Camera();
 
-        void update();
+        virtual void update();
         void rotate();
 
-        glm::vec3& get_position();
+        const glm::vec3& get_position() const;
+        void set_position(const glm::vec3& p);
 
-        glm::mat4 get_view_matrix();
-        glm::mat4 get_projection_matrix();
+        glm::mat4 get_view_matrix() const;
+        glm::mat4 get_projection_matrix() const;
     private:
         void reset_mouse();
 

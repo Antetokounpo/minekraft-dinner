@@ -51,11 +51,11 @@ void Terrain::compute_visible_faces(int u, int v)
     Chunk& current_chunk = get_chunk(u, v);
     std::vector<Face> faces_to_render;
 
-    for(int i = 0; i<16; ++i)
+    for(unsigned i = 0; i<16; ++i)
     {
-        for(int j = 0; j<256; ++j)
+        for(unsigned j = 0; j<256; ++j)
         {
-            for(int k = 0; k<16; ++k)
+            for(unsigned k = 0; k<16; ++k)
             {
                 unsigned current_block = current_chunk.get_block(i, j, k);
                 

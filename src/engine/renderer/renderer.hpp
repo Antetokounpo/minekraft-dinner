@@ -9,6 +9,7 @@
 #include<engine/shader.hpp>
 #include<terrain/chunk.hpp>
 #include<terrain/terrain.hpp>
+#include<game/world.hpp>
 
 #include "camera.hpp"
 #include "texture_manager.hpp"
@@ -23,17 +24,17 @@ class Renderer
         void render();
         void render_terrain(Terrain& terrain);
         void render_chunk(const Chunk& chunk);
+        void render_world(World& world);
 
         void load_model(const std::string& filename);
         void load_shader(const std::string& vertex_filename, const std::string& fragment_filename);
         void load_texture(const std::string& filename);
 
-        glm::vec3& get_position();
-        glm::mat4 get_view_matrix();
-        glm::mat4 get_projection_matrix();
+        const glm::vec3& get_position() const;
+        glm::mat4 get_view_matrix() const;
+        glm::mat4 get_projection_matrix() const;
     protected:
         Camera camera;
-        glm::vec3 object_position;
         int render_distance;
 
         Model model;

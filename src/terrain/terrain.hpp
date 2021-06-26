@@ -25,5 +25,4 @@ class Terrain
         Perlin perlin;
 
         std::unordered_map<int, std::unordered_map<int, Chunk>> chunks;
-        std::unordered_map<int, std::unordered_map<int, std::vector<std::tuple<int, int, int, int>>>> visible_faces_per_chunk;
 };

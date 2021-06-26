@@ -97,17 +97,22 @@ void Camera::rotate()
                                   cos(horizontal_angle));
 }
 
-glm::vec3& Camera::get_position()
+const glm::vec3& Camera::get_position() const
 {
     return position;
 }
 
-glm::mat4 Camera::get_view_matrix()
+void Camera::set_position(const glm::vec3& p)
+{
+    position = p;
+}
+
+glm::mat4 Camera::get_view_matrix() const
 {
     return glm::lookAt(position, position+direction, up);
 }
 
-glm::mat4 Camera::get_projection_matrix()
+glm::mat4 Camera::get_projection_matrix() const
 {
     return glm::perspective(glm::radians(fov), (float)width/(float)height, 0.1f, 1000.0f); // FOV matrix
 }
