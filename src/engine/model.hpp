@@ -10,6 +10,7 @@ class Model
     public:
         Model();
         ~Model();
+        void load(const std::string& obj_filename);
         void load(float vertices[], size_t s_vertices, float uvs[], size_t s_uvs, float normals[], size_t s_normals, unsigned int indices[], size_t s_indices);
         void render();
         void start() const;

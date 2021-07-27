@@ -49,13 +49,13 @@ void Texture::load(const std::string& filename)
     glBindTexture(GL_TEXTURE_2D, 0); // Unbind texture
 }
 
-void Texture::start()
+void Texture::start() const
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture_id);
 }
 
-void Texture::stop()
+void Texture::stop() const
 {
     glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -4,6 +4,8 @@
 
 #include<GL/glew.h>
 
+#include<engine/loaders/objloader.hpp>
+
 Model::Model()
 {
     glGenVertexArrays(1, &vao);
@@ -54,6 +56,17 @@ void Model::load(float vertices[], size_t s_vertices, float uvs[], size_t s_uvs,
     glBindVertexArray(0); // Unbind VAO and associated VBOs
 
     vertex_count = s_indices/sizeof(indices[0]);
+}
+
+void Model::load(const std::string& obj_filename)
+{
+    std::vector<float> vertices;
+    std::vector<float> uvs;
+    std::vector<float> normals;
+    std::vector<unsigned int> indices;
+
+    OBJLoader::load_file(obj_filename, vertices, uvs, normals, indices);
+    Model::load(&vertices[0], vertices.size()*sizeof(vertices[0]), &uvs[0], uvs.size()*sizeof(uvs[0]), &normals[0], normals.size()*sizeof(normals[0]), &indices[0], indices.size()*sizeof(indices[0]));
 }
 
 void Model::render()
