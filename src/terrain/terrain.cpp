@@ -1,6 +1,7 @@
 #include "terrain.hpp"
 
 #include<algorithm>
+#include<cmath>
 
 #include "chunk.hpp"
 
@@ -24,7 +25,12 @@ unsigned int Terrain::get_block(int x, int y, int z)
 {
     if(y < 0 || y > 255)
         return 0;
-    return get_chunk(x/16, z/16).get_block((unsigned)x % 16, y, (unsigned)z % 16);
+    return get_chunk(floor((double)x/16), floor((double)z/16)).get_block((unsigned)x % 16, y, (unsigned)z % 16);
+}
+
+unsigned Terrain::get_block(glm::vec3 v)
+{
+    return get_block(v.x, v.y, v.z);
 }
 
 bool Terrain::is_chunk(int x, int y)
