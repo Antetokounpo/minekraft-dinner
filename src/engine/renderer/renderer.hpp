@@ -22,6 +22,7 @@ class Renderer
 
         void update();
         void render();
+
         void render_terrain(Terrain& terrain);
         void render_chunk(const Chunk& chunk);
         void render_world(World& world);

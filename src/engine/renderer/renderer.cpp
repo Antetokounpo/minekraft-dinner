@@ -68,9 +68,17 @@ void Renderer::render_terrain(Terrain& terrain)
     }
 }
 
+void Renderer::render_world(World& world)
+{
+    camera = world.get_player();
+    update();
+
+    render_terrain(world.get_terrain());
+}
+
 void Renderer::update()
 {
-    camera.update();
+    //camera.update();
     shader.set_uniform_variable(camera.get_view_matrix(), "view");
     shader.set_uniform_variable(camera.get_projection_matrix(), "projection");
 }
