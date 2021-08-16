@@ -45,24 +45,31 @@ void Camera::reset_mouse()
     SDL_WarpMouseInWindow(window, width/2, height/2);
 }
 
-void Camera::update()
+float Camera::get_time_delta()
 {
-    if(!(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS))
-        return;
+    float delta_time = SDL_GetTicks() - t;
+    t = SDL_GetTicks();
 
-    float delta_time = (SDL_GetTicks() - t);
-    float movement = delta_time * speed;
+    return delta_time;
+}
 
+void Camera::check_inputs()
+{
     SDL_PumpEvents();
+    SDL_GetMouseState(&mouse_pos_x, &mouse_pos_y);
+}
 
-    int xpos, ypos;
-    SDL_GetMouseState(&xpos, &ypos);
-
-    horizontal_angle += sensitivity * delta_time * -float(xpos - width/2);
-    vertical_angle += sensitivity * delta_time * -float(ypos - height/2);
+void Camera::update_angles(float delta)
+{
+    horizontal_angle += sensitivity * delta * -float(mouse_pos_x - width/2);
+    vertical_angle += sensitivity * delta * -float(mouse_pos_y - height/2);
     if(abs(vertical_angle) > M_PI/2) // On ne peut pas se casser le cou
         vertical_angle = (vertical_angle/abs(vertical_angle)) * (M_PI_2 - 0.001f);
-    rotate();
+}
+
+void Camera::update_position(float delta)
+{
+    float movement = delta * speed;
 
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_W])
@@ -77,9 +84,22 @@ void Camera::update()
         position += up * movement;
     if(state[SDL_SCANCODE_LCTRL])
         position -= up * movement;
+}
+
+void Camera::update()
+{
+    if(!(SDL_GetWindowFlags(window) & SDL_WINDOW_INPUT_FOCUS))
+        return;
+
+    float delta_time = get_time_delta();
+
+    check_inputs();
+
+    update_angles(delta_time);
+    rotate();
+    update_position(delta_time);
 
     reset_mouse();
-    t = SDL_GetTicks();
 }
 
 void Camera::rotate()
@@ -105,6 +125,26 @@ const glm::vec3& Camera::get_position() const
 void Camera::set_position(const glm::vec3& p)
 {
     position = p;
+}
+
+const glm::vec3& Camera::get_direction() const
+{
+    return direction;
+}
+
+void Camera::set_direction(const glm::vec3& d)
+{
+    direction = d;
+}
+
+const glm::vec3& Camera::get_walking_direction() const
+{
+    return  walking_direction;
+}
+
+void Camera::set_walking_direction(const glm::vec3& wd)
+{
+    walking_direction = wd;
 }
 
 glm::mat4 Camera::get_view_matrix() const
