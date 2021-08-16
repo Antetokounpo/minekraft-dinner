@@ -5,6 +5,10 @@
 #include<SDL2/SDL_image.h>
 #include<GL/glew.h>
 
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_sdl.h>
+#include <imgui/imgui_impl_opengl3.h>
+
 #include "engine/model.hpp"
 #include "engine/texture.hpp"
 #include "engine/shader.hpp"
@@ -15,6 +19,8 @@
 
 #include "terrain/chunk.hpp"
 #include "terrain/terrain.hpp"
+
+#include "game/world.hpp"
 
 void opengl_debug_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
@@ -34,7 +40,7 @@ int main()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-    SDL_Window* window = SDL_CreateWindow("OpenGL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_OPENGL);
+    SDL_Window* window = SDL_CreateWindow("KraftDinner", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(window);
     Uint32 t = SDL_GetTicks();
 
@@ -52,8 +58,8 @@ int main()
     Renderer renderer(window);
     renderer.load_texture("res/tex/atlas.png");
     renderer.load_shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
-    Terrain terrain;
-    terrain.set_seed(1234);
+    World world(window);
+    world.get_terrain().set_seed(1234);
 
     SDL_GL_SetSwapInterval(1);
     SDL_ShowCursor(SDL_DISABLE);
@@ -64,6 +70,15 @@ int main()
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(opengl_debug_cb, 0);
     #endif
+
+    /* Init ImGui */
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
+    ImGui_ImplSDL2_InitForOpenGL(window, context);
+    ImGui_ImplOpenGL3_Init("#version 330 core");
+    ImGui::StyleColorsDark();
+
 
     bool quit = false;
     while(!quit)
@@ -77,9 +92,21 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(1, 1, 0, 1);
 
-        renderer.update();
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
 
-        renderer.render_terrain(terrain);
+        world.update();
+        renderer.render_world(world);
+
+        ImGui::Begin("Debug Info");
+        ImGui::TextColored(ImVec4(0, 0.5, 1, 1), ("X : " + std::to_string(world.get_player().get_position().x)).c_str());
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), ("Y : " + std::to_string(world.get_player().get_position().y)).c_str());
+        ImGui::TextColored(ImVec4(1, 0, 0, 1), ("Z : " + std::to_string(world.get_player().get_position().z)).c_str());
+        ImGui::End();
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         SDL_GL_SwapWindow(window);
         //std::cout << 1000.0f/(SDL_GetTicks() - t) << " fps\n";

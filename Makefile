@@ -6,12 +6,14 @@ LDFLAGS  := -lSDL2 -lSDL2_image -lGL -lGLEW
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 TARGET   := minekraft
-INCLUDE  := -Isrc/
-SRC      := $(wildcard src/*.cpp) \
+INCLUDE  := -Isrc/ -Ilib/
+SRC      := $(wildcard lib/imgui/*.cpp) \
+			$(wildcard src/*.cpp) \
 			$(wildcard src/engine/*.cpp) \
 			$(wildcard src/engine/loaders/*.cpp) \
 			$(wildcard src/engine/renderer/*.cpp) \
-			$(wildcard src/terrain/*.cpp)
+			$(wildcard src/terrain/*.cpp) \
+			$(wildcard src/game/*.cpp)
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
