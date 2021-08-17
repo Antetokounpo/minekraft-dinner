@@ -39,6 +39,7 @@ class Camera
         double vertical_angle;
         double horizontal_angle;
         int mouse_pos_x, mouse_pos_y;
+        Uint32 mouse_state;
 
         glm::vec3 direction;
         glm::vec3 right;

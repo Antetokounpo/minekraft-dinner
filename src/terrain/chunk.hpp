@@ -36,6 +36,7 @@ class Chunk
         std::tuple<int, int> get_position() const;
 
         unsigned int get_block(unsigned int x, unsigned int y, unsigned int z) const;
+        void set_block(unsigned x, unsigned y, unsigned z, unsigned b);
         void generate(Perlin& perlin);
         
         void build_mesh();
@@ -46,10 +47,12 @@ class Chunk
         std::vector<Face> get_visible_faces() const;
         void set_visible_faces(const std::vector<Face>& visible_f);
         bool is_visible_faces() const;
+        void reset_visible_faces();
+
     private:
         int x;
         int z;
-        unsigned int blocks[16][256][16];
+        unsigned blocks[16][256][16];
         std::vector<Face> visible_faces;
         std::vector<std::array<float, 12>> faces;
         Model chunk_mesh;

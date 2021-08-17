@@ -79,7 +79,6 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 330 core");
     ImGui::StyleColorsDark();
 
-
     bool quit = false;
     while(!quit)
     {
@@ -88,6 +87,8 @@ int main()
         {
             if(e.type == SDL_QUIT)
                 quit = true;
+            else
+                world.handle_events(e);
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(1, 1, 0, 1);

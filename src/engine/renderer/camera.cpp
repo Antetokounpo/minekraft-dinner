@@ -56,7 +56,7 @@ float Camera::get_time_delta()
 void Camera::check_inputs()
 {
     SDL_PumpEvents();
-    SDL_GetMouseState(&mouse_pos_x, &mouse_pos_y);
+    mouse_state = SDL_GetMouseState(&mouse_pos_x, &mouse_pos_y);
 }
 
 void Camera::update_angles(float delta)

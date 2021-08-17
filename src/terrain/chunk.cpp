@@ -68,6 +68,12 @@ unsigned int Chunk::get_block(unsigned int x, unsigned int y, unsigned int z) co
     return blocks[x][y][z];
 }
 
+void Chunk::set_block(unsigned x, unsigned y, unsigned z, unsigned b)
+{
+    blocks[x][y][z] = b;
+    reset_visible_faces();
+}
+
 void Chunk::generate(Perlin& perlin)
 {
     for(int i = 0; i<16; ++i)
@@ -76,16 +82,12 @@ void Chunk::generate(Perlin& perlin)
             double h = perlin.perlin((double)x+((double)i/16), (double)z+((double)k/16), 0.0f);
             for(int j = 0; j<256; ++j)
             {
-                if (k == i && j < h*25)
-                {
-                    blocks[i][j][k] = 3;
-                }
-                else if(j < h*25)
+                if(j < h*25)
                 {
                     if(h > 0.5f)
                         blocks[i][j][k] = 1;
                     else
-                        blocks[i][j][k] = 2; // Besoin de texture atlas
+                        blocks[i][j][k] = 2;
                     
                 }
                 else
@@ -193,4 +195,9 @@ std::vector<Face> Chunk::get_visible_faces() const
 bool Chunk::is_visible_faces() const
 {
     return !visible_faces.empty();
+}
+
+void Chunk::reset_visible_faces()
+{
+    visible_faces = {};
 }

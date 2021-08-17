@@ -15,11 +15,17 @@ class Player : public Camera, public Model, public Texture
         void update_position(Terrain& t, float delta);
 
         bool check_collision(Terrain& t);
+        void check_block_interaction(Terrain& t);
 
         const glm::vec3& get_player_position() const;
 
+        void set_punching(bool b);
+        void set_building(bool b);
+
     private:
+        bool is_punching;
+        bool is_building;
+
         glm::vec3 player_position;
         glm::vec3 hitbox;
-        glm::vec3 acceleration;
 };

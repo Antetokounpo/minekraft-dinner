@@ -12,6 +12,7 @@ class World
         ~World();
 
         void update();
+        void handle_events(SDL_Event e);
         Player& get_player();
         Terrain& get_terrain();
     private:

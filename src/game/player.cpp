@@ -7,9 +7,10 @@
 
 Player::Player(SDL_Window* win) : Camera(win)
 {
-    acceleration = glm::vec3(0.0f);
     hitbox = {1.0f, 1.0f, 1.0f};
     player_position = {0.0f, 20.0f, 0.0f};
+
+    is_punching = false;
 
     Model::load("res/models/player.obj");
     Texture::load("res/tex/blue.png");
@@ -20,8 +21,6 @@ Player::~Player(){}
 void Player::update_position(Terrain& t, float delta)
 {
     float movement = delta * speed;
-
-    glm::vec3 old_position = player_position;
 
     const Uint8* state = SDL_GetKeyboardState(NULL);
     if(state[SDL_SCANCODE_W])
@@ -37,10 +36,7 @@ void Player::update_position(Terrain& t, float delta)
     if(state[SDL_SCANCODE_LCTRL])
         player_position -= up * movement;
 
-    if(check_collision(t))
-        player_position = old_position;
-
-    position = {player_position.x, player_position.y+2*hitbox.y, player_position.z-5*hitbox.z};
+    position = player_position;//{player_position.x+0.5f, player_position.y+2, player_position.z+0.5f}; // camera position
 }
 
 void Player::update(Terrain& t)
@@ -52,48 +48,43 @@ void Player::update(Terrain& t)
 
     check_inputs();
 
+    check_block_interaction(t);
+
     update_angles(delta_time);
     rotate();
     update_position(t, delta_time);
 
     reset_mouse();
+    is_punching = mouse_state & SDL_BUTTON_LMASK; // On continue de puncher ssi le bouton est toujours enfoncé
 }
 
 bool Player::check_collision(Terrain& t)
 {
-    /*
-    Les collisions horizontales et verticales sont separées. Peu importe
-    la face du joueur entre en collision seulement le block en question est
-    nécessaire pour calculer le vecteur normal ou le vecteur collision. La hauteur
-    dans le cas d'une collision horizontale n'est pas importante et il en va
-    de même pour la collision verticale.
-    */
-
-    glm::vec3 minbox = player_position;
-    glm::vec3 maxbox = minbox+hitbox;
-
-    for(int i = -1; i<=1; ++i)
-    for(int j = -1; j<=1; ++j)
-    for(int k = -1; k<=1; ++k)
+    unsigned block;
+    block = t.get_block(player_position.x, player_position.y, player_position.z);
+    if(!block)
     {
-        glm::vec3 d = {i, j, k};
-        glm::vec3 minblock = player_position+d;
-        glm::vec3 maxblock = minblock+glm::vec3(1.0f);
-        if(!t.get_block(minblock))
-            continue;
-        else
-        {
-            bool c = (minbox.x <= maxblock.x && maxbox.x >= minblock.x) &&
-                     (minbox.y <= maxblock.y && maxbox.y >= minblock.y) &&
-                     (minbox.z <= maxblock.z && maxbox.z >= minblock.z);
-            if(c) return true;
-        }
+        return false;
     }
 
-    return false;
+    return true; 
+}
+
+void Player::check_block_interaction(Terrain& t)
+{
+    glm::vec3 looking_block = direction*2.0f + position;
+    unsigned block = t.get_block(looking_block);
+
+    if(block && is_punching)
+        t.set_block(looking_block, 0);
 }
 
 const glm::vec3& Player::get_player_position() const
 {
     return player_position;
+}
+
+void Player::set_punching(bool b)
+{
+    is_punching = b;
 }

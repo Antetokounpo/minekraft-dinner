@@ -9,6 +9,15 @@ void World::update()
     player.update(terrain);
 }
 
+void World::handle_events(SDL_Event e)
+{
+    if(e.type == SDL_MOUSEBUTTONDOWN)
+    {
+        if(e.button.button == SDL_BUTTON_LEFT)
+            player.set_punching(true);
+    }
+}
+
 Player& World::get_player()
 {
     return player;
