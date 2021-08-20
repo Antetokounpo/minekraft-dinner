@@ -88,7 +88,6 @@ void Chunk::generate(Perlin& perlin)
                         blocks[i][j][k] = 1;
                     else
                         blocks[i][j][k] = 2;
-                    
                 }
                 else
                     blocks[i][j][k] = 0;

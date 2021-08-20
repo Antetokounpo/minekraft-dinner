@@ -17,11 +17,11 @@ class Terrain
 
         void set_seed(unsigned int seed);
         Chunk& get_chunk(int x, int y);
-        Chunk& get_chunk_of_block(int x, int y, int z);
+        Chunk& get_chunk_of_block(double x, double y, double z);
 
-        unsigned int get_block(int x, int y, int z);
+        unsigned int get_block(double x, double y, double z);
         unsigned get_block(glm::vec3 v);
-        void set_block(int x, int y, int z, unsigned b);
+        void set_block(double x, double y, double z, unsigned b);
         void set_block(glm::vec3 v, unsigned b);
 
         bool is_chunk(int x , int y);

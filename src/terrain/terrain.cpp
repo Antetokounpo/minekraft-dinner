@@ -21,16 +21,16 @@ Chunk& Terrain::get_chunk(int x, int y)
     return chunks[x][y];
 }
 
-Chunk& Terrain::get_chunk_of_block(int x, int y, int z)
+Chunk& Terrain::get_chunk_of_block(double x, double y, double z)
 {
-    return get_chunk(floor((double)x/16), floor((double)z/16));
+    return get_chunk(floor(x/16), floor(z/16));
 }
 
-unsigned int Terrain::get_block(int x, int y, int z)
+unsigned int Terrain::get_block(double x, double y, double z)
 {
     if(y < 0 || y > 255)
         return 0;
-    return get_chunk_of_block(x, y, z).get_block((unsigned)x % 16, y, (unsigned)z % 16);
+    return get_chunk_of_block(x, y, z).get_block((unsigned)floor(x) % 16, y, (unsigned)floor(z) % 16);
 }
 
 unsigned Terrain::get_block(glm::vec3 v)
@@ -38,10 +38,10 @@ unsigned Terrain::get_block(glm::vec3 v)
     return get_block(v.x, v.y, v.z);
 }
 
-void Terrain::set_block(int x, int y, int z, unsigned b)
+void Terrain::set_block(double x, double y, double z, unsigned b)
 {
     Chunk& c = get_chunk_of_block(x, y, z);
-    c.set_block((unsigned)x % 16, y, (unsigned)z % 16, b);
+    c.set_block((unsigned)floor(x) % 16, y, (unsigned)floor(z) % 16, b);
 
 }
 

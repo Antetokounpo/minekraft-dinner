@@ -11,9 +11,6 @@ Player::Player(SDL_Window* win) : Camera(win)
     player_position = {0.0f, 20.0f, 0.0f};
 
     is_punching = false;
-
-    Model::load("res/models/player.obj");
-    Texture::load("res/tex/blue.png");
 }
 
 Player::~Player(){}
@@ -67,13 +64,22 @@ bool Player::check_collision(Terrain& t)
         return false;
     }
 
-    return true; 
+    return true;
 }
 
 void Player::check_block_interaction(Terrain& t)
 {
-    glm::vec3 looking_block = direction*2.0f + position;
-    unsigned block = t.get_block(looking_block);
+    glm::vec3 looking_block;
+    unsigned block;
+    for(int i = 0; i<80; ++i)
+    {
+        looking_block = direction*(i*0.025f) + position;
+        block = t.get_block(looking_block);
+        if(block)
+            break;
+    }
+
+    std::cout << looking_block.x << " " << looking_block.y << " " << looking_block.z << " \n";
 
     if(block && is_punching)
         t.set_block(looking_block, 0);

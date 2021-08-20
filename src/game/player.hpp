@@ -5,7 +5,7 @@
 #include<engine/model.hpp>
 #include<engine/texture.hpp>
 
-class Player : public Camera, public Model, public Texture
+class Player : public Camera
 {
     public:
         Player(SDL_Window* win);
