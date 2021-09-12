@@ -5,26 +5,7 @@
 
 #include<engine/model.hpp>
 #include "perlin.hpp"
-
-enum FaceOrientation
-{
-    SUD,
-    EST,
-    NORD,
-    OUEST,
-    DESSUS,
-    DESSOUS
-};
-
-struct Face
-{
-    unsigned i;
-    unsigned j;
-    unsigned k;
-
-    FaceOrientation face;
-    unsigned texture_id;
-};
+#include "faces.hpp"
 
 class Chunk
 {
@@ -54,6 +35,5 @@ class Chunk
         int z;
         unsigned blocks[16][256][16];
         std::vector<Face> visible_faces;
-        std::vector<std::array<float, 12>> faces;
         Model chunk_mesh;
 };

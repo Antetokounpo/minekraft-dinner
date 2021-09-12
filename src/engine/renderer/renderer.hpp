@@ -26,6 +26,7 @@ class Renderer
         void render_terrain(Terrain& terrain);
         void render_chunk(const Chunk& chunk);
         void render_world(World& world);
+        void render_face(Face f, const Chunk& chunk);
 
         void load_model(const std::string& filename);
         void load_shader(const std::string& vertex_filename, const std::string& fragment_filename);
@@ -40,6 +41,5 @@ class Renderer
 
         Model model;
         Texture texture;
-        TextureManager texture_manager;
         Shader shader;
 };

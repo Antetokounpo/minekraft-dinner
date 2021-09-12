@@ -11,7 +11,7 @@
 
 Renderer::Renderer(SDL_Window* win) : camera(win)
 {
-    render_distance = 5;
+    render_distance = 8;
 }
 
 Renderer::~Renderer(){}
@@ -32,19 +32,19 @@ void Renderer::render_chunk(const Chunk& chunk)
 void Renderer::render()
 {
     model.start();
-    texture_manager.start_texture(0);
+    texture.start();
     
     shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {0, 0, 0}),  "model");
     glDrawElements(GL_TRIANGLES, model.get_vertex_count(), GL_UNSIGNED_INT, 0);
 
     model.stop();
-    texture_manager.stop_texture();
+    texture.stop();
 }
 
 void Renderer::render_terrain(Terrain& terrain)
 {
-    int r = camera.get_position()[0]/16;
-    int s = camera.get_position()[2]/16;
+    int r = floor(camera.get_position()[0]/16);
+    int s = floor(camera.get_position()[2]/16);
     std::vector<std::tuple<int, int>> chunks_to_render;
 
     for(int i = -render_distance; i<render_distance+1; ++i)
@@ -63,17 +63,72 @@ void Renderer::render_terrain(Terrain& terrain)
         Chunk& chunk = terrain.get_chunk(u, v);
 
         if(generated) // 1 seule génération par call
-            break;
+            continue;
         render_chunk(chunk);
     }
 }
 
 void Renderer::render_world(World& world)
 {
+    shader.start();
     camera = world.get_player();
     update();
 
+    if(world.get_player().is_looking_at_face())
+        render_face(world.get_player().get_looking_face(), world.get_terrain().get_chunk_of_block(world.get_player().get_looking_block()));
     render_terrain(world.get_terrain());
+    shader.stop();
+}
+
+void Renderer::render_face(Face f, const Chunk& chunk)
+{
+    const auto& [x, y, z, o, t] = f;
+    const auto& [u, v] = chunk.get_position();
+    auto face_vertices = faces[o];
+    std::array<float, 8> uvs = {
+        0.0f, 0.0f,
+        1.0f/(atlas_w/tex_w), 1.0f/(atlas_h/tex_h),
+        0.0f, 1.0f/(atlas_h/tex_h),
+        1.0f/(atlas_w/tex_w), 0.0f
+    };
+
+        std::vector<float> temp_uvs (uvs.begin(), uvs.end());
+        for(unsigned c = 0; c<temp_uvs.size(); c += 2)
+        {
+            unsigned u = t % (atlas_w/tex_w);
+            temp_uvs[c] += u * 1.0f/(atlas_w/tex_w);
+            u = t / (atlas_w/tex_w);
+            temp_uvs[c+1] += u * 1.0f/(atlas_h/tex_h);
+        }
+
+    std::vector<float> normals = {
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+    };
+
+    std::array<unsigned, 6> indices = {
+        0, 1, 2,
+        1, 0, 3
+    };
+
+    Model face_model;
+    face_model.load(&face_vertices[0], face_vertices.size()*sizeof(face_vertices[0]), 
+                    &temp_uvs[0], temp_uvs.size()*sizeof(temp_uvs[0]),
+                    &normals[0], normals.size()*sizeof(normals[0]),
+                    &indices[0], indices.size()*sizeof(indices[0]));
+    Texture face_texture;
+    face_texture.load("res/tex/atlas.png");
+
+    face_model.start();
+    face_texture.start();
+    
+    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {(int)x+u*16, y, (int)z+v*16}),  "model");
+    glDrawElements(GL_TRIANGLES, face_model.get_vertex_count(), GL_UNSIGNED_INT, 0);
+
+    face_model.stop();
+    face_texture.stop();
 }
 
 void Renderer::update()
@@ -103,7 +158,6 @@ void Renderer::load_shader(const std::string& vertex_filename, const std::string
 {
     shader.stop();
     shader.load(vertex_filename, fragment_filename);
-    shader.start();
 }
 
 const glm::vec3& Renderer::get_position() const

@@ -26,6 +26,11 @@ Chunk& Terrain::get_chunk_of_block(double x, double y, double z)
     return get_chunk(floor(x/16), floor(z/16));
 }
 
+Chunk& Terrain::get_chunk_of_block(glm::vec3 v)
+{
+    return get_chunk_of_block(v.x, v.y, v.z);
+}
+
 unsigned int Terrain::get_block(double x, double y, double z)
 {
     if(y < 0 || y > 255)
@@ -43,6 +48,13 @@ void Terrain::set_block(double x, double y, double z, unsigned b)
     Chunk& c = get_chunk_of_block(x, y, z);
     c.set_block((unsigned)floor(x) % 16, y, (unsigned)floor(z) % 16, b);
 
+    // Update les chunks contigus
+    const auto& [u, v] = c.get_position();
+    for(int i = -1; i<=1; ++i)
+    {
+        get_chunk(u+i, v).reset_visible_faces();
+        get_chunk(u, v+i).reset_visible_faces();
+    }
 }
 
 void Terrain::set_block(glm::vec3 v, unsigned b)

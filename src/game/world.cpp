@@ -15,6 +15,8 @@ void World::handle_events(SDL_Event e)
     {
         if(e.button.button == SDL_BUTTON_LEFT)
             player.set_punching(true);
+        else if(e.button.button == SDL_BUTTON_RIGHT)
+            player.set_building(true);
     }
 }
 

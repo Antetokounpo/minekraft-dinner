@@ -5,49 +5,11 @@
 
 #include<engine/loaders/objloader.hpp>
 
+#include "faces.hpp"
+
 Chunk::Chunk()
 {
     visible_faces = {};
-
-    faces = {
-        { // SUD
-            0.0f, 0.0f, 0.0f,
-             1.0f,  1.0f, 0.0f,
-            0.0f,  1.0f, 0.0f,
-             1.0f, 0.0f, 0.0f
-        },
-        { // EST
-             1.0f, 0.0f, 0.0f,
-             1.0f,  1.0f,  1.0f,
-             1.0f,  1.0f, 0.0f,
-             1.0f, 0.0f,  1.0f
-        },
-        { // NORD
-             1.0f, 0.0f,  1.0f,
-            0.0f,  1.0f,  1.0f,
-             1.0f,  1.0f,  1.0f,
-            0.0f, 0.0f,  1.0f
-        },
-        { // OUEST
-            0.0f, 0.0f,  1.0f,
-            0.0f,  1.0f, 0.0f,
-            0.0f,  1.0f,  1.0f,
-            0.0f, 0.0f, 0.0f
-        },
-        { // DESSUS
-            0.0f, 1.0f,  1.0f,
-             1.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-             1.0f, 1.0f,  1.0f
-        },
-        { // DESSOUS
-            0.0f, 0.0f, 0.0f,
-             1.0f, 0.0f,  1.0f,
-            0.0f, 0.0f,  1.0f,
-             1.0f, 0.0f, 0.0f
-        },
-    };
-
 }
 
 Chunk::~Chunk(){}
@@ -101,11 +63,6 @@ void Chunk::build_mesh()
         0, 1, 2,
         1, 0, 3
     };
-
-    unsigned atlas_w = 160;
-    unsigned atlas_h = 160;
-    unsigned tex_w = 16;
-    unsigned tex_h = 16;
 
     std::array<float, 8> uvs = {
         0.0f, 0.0f,
