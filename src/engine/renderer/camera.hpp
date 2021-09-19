@@ -28,6 +28,8 @@ class Camera
 
         glm::mat4 get_view_matrix() const;
         glm::mat4 get_projection_matrix() const;
+        int get_window_height() const;
+        int get_window_width() const;
     protected:
         float get_time_delta();
         void reset_mouse();

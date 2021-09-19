@@ -156,3 +156,13 @@ glm::mat4 Camera::get_projection_matrix() const
 {
     return glm::perspective(glm::radians(fov), (float)width/(float)height, 0.1f, 1000.0f); // FOV matrix
 }
+
+int Camera::get_window_height() const
+{
+    return height;
+}
+
+int Camera::get_window_width() const
+{
+    return width;
+}

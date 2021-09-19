@@ -65,6 +65,8 @@ int main()
     SDL_ShowCursor(SDL_DISABLE);
 
     glEnable(GL_DEPTH_TEST); // So triangles don't "overlap"
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     #ifdef DEBUG
     glEnable(GL_DEBUG_OUTPUT);

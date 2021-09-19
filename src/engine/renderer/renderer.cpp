@@ -72,11 +72,13 @@ void Renderer::render_world(World& world)
 {
     shader.start();
     camera = world.get_player();
+
     update();
 
     if(world.get_player().is_looking_at_face())
         render_face(world.get_player().get_looking_face(), world.get_terrain().get_chunk_of_block(world.get_player().get_looking_block()));
     render_terrain(world.get_terrain());
+    render_hud();
     shader.stop();
 }
 
@@ -129,6 +131,60 @@ void Renderer::render_face(Face f, const Chunk& chunk)
 
     face_model.stop();
     face_texture.stop();
+}
+
+void Renderer::render_hud()
+{
+    float crosshair_size = 20.0f;
+    std::array<float, 12> vertices = 
+        {
+             crosshair_size, 0.0f,  1.0f,
+            0.0f,  crosshair_size,  1.0f,
+             crosshair_size,  crosshair_size,  1.0f,
+            0.0f, 0.0f,  1.0f
+        };
+
+    std::vector<float> uvs = {
+        0.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        1.0f, 0.0f
+    };
+
+    std::vector<float> normals = {
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+    };
+
+    std::vector<unsigned> indices = {
+        0, 1, 2,
+        1, 0, 3
+    };
+
+    Model hud_model;
+    hud_model.load(&vertices[0], vertices.size()*sizeof(vertices[0]), 
+                    &uvs[0], uvs.size()*sizeof(uvs[0]),
+                    &normals[0], normals.size()*sizeof(normals[0]),
+                    &indices[0], indices.size()*sizeof(indices[0]));
+    Texture hud_texture;
+    hud_texture.load("res/tex/crosshair.png");
+
+    glDisable(GL_DEPTH_TEST);
+
+    hud_model.start();
+    hud_texture.start();
+    glm::mat4 translate = glm::translate(glm::mat4(1.0f), {camera.get_window_width()/2-crosshair_size/2, camera.get_window_height()/2-crosshair_size/2, 0.0f});
+    glm::mat4 ortho = glm::ortho(0.0f, (float)camera.get_window_width(), (float)camera.get_window_height(), 0.0f);
+    shader.set_uniform_variable(translate,  "model");
+    shader.set_uniform_variable(ortho,  "view");
+    shader.set_uniform_variable(glm::mat4(1.0f),  "projection");
+    glDrawElements(GL_TRIANGLES, hud_model.get_vertex_count(), GL_UNSIGNED_INT, 0);
+    hud_model.start();
+    hud_model.stop();
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Renderer::update()
