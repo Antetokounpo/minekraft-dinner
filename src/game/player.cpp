@@ -14,6 +14,7 @@ Player::Player(SDL_Window* win) : Camera(win)
 
     is_looking_face = false;
     looking_face = {0, 0, 0, SUD, 0};
+    ray_range = 2.0f;
 }
 
 Player::~Player(){}
@@ -74,31 +75,45 @@ bool Player::check_collision(Terrain& t)
 void Player::check_block_interaction(Terrain& t)
 {
     unsigned block;
-    for(int i = 0; i<80; ++i)
+    glm::vec3 ray = get_ray();
+    unsigned increment_size = 80;
+    float ray_increment = ray_range/increment_size;
+    for(unsigned i = 0; i<increment_size; ++i)
     {
-        looking_block = direction*(i*0.025f) + position;
+        looking_block = ray*(i*ray_increment) + position;
         block = t.get_block(looking_block);
         if(block)
             break;
     }
 
+    glm::vec3 looking_block_rel = looking_block - glm::floor(looking_block);
+    double delta_x = (ray.x > 0) ? glm::abs(looking_block_rel.x) : (1.0f - glm::abs(looking_block_rel.x));
+    double delta_y = (ray.y > 0) ? glm::abs(looking_block_rel.y) : (1.0f - glm::abs(looking_block_rel.y));
+    double delta_z = (ray.z > 0) ? glm::abs(looking_block_rel.z) : (1.0f - glm::abs(looking_block_rel.z));
 
     FaceOrientation face;
-
-    glm::vec3 abs_dir = glm::abs(direction);
-
-    if(abs_dir.x > abs_dir.y && abs_dir.x > abs_dir.z)
-        face = (direction.x > 0) ? OUEST : EST;
-    else if(abs_dir.y > abs_dir.x && abs_dir.y > abs_dir.z)
-        face = (direction.y > 0) ? DESSOUS : DESSUS;
-    else if(abs_dir.z > abs_dir.x && abs_dir.z > abs_dir.y)
-        face = (direction.z > 0) ? SUD : NORD;
+    if(glm::min(delta_x, delta_y) == delta_x && glm::min(delta_x, delta_z) == delta_x)
+        face = (ray.x > 0) ? OUEST : EST;
+    else if(glm::min(delta_y, delta_z) == delta_y)
+        face = (ray.y > 0) ? DESSOUS : DESSUS;
+    else
+        face = (ray.z > 0) ? SUD : NORD;
 
     is_looking_face = (bool)block;
-    looking_face = {(unsigned)floor(looking_block.x) % 16, looking_block.y, (unsigned)floor(looking_block.z) % 16, face, 2};
+    looking_face = {(unsigned)floor(looking_block.x) % 16, (unsigned)floor(looking_block.y), (unsigned)floor(looking_block.z) % 16, face, 2};
 
     if(block && is_punching)
         t.set_block(looking_block, 0);
+}
+
+glm::vec3 Player::get_ray()
+{
+    glm::vec4 ray_clip = {0.0f, 0.0f, -1.0f, 1.0f};
+    glm::vec4 ray_eye = glm::inverse(get_projection_matrix()) * ray_clip;
+    ray_eye = {ray_eye.x, ray_eye.y, -1.0, 0.0};
+    glm::vec4 ray_wor = glm::inverse(get_view_matrix()) * ray_eye;
+
+    return glm::normalize(glm::vec3({ray_wor.x, ray_wor.y, ray_wor.z}));
 }
 
 bool Player::is_looking_at_face() const

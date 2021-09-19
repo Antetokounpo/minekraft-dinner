@@ -135,7 +135,7 @@ void Renderer::render_face(Face f, const Chunk& chunk)
 
 void Renderer::render_hud()
 {
-    float crosshair_size = 20.0f;
+    float crosshair_size = 15.0f;
     std::array<float, 12> vertices = 
         {
              crosshair_size, 0.0f,  1.0f,
@@ -189,7 +189,6 @@ void Renderer::render_hud()
 
 void Renderer::update()
 {
-    //camera.update();
     shader.set_uniform_variable(camera.get_view_matrix(), "view");
     shader.set_uniform_variable(camera.get_projection_matrix(), "projection");
 }

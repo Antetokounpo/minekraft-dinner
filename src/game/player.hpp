@@ -16,6 +16,7 @@ class Player : public Camera
 
         bool check_collision(Terrain& t);
         void check_block_interaction(Terrain& t);
+        glm::vec3 get_ray();
         bool is_looking_at_face() const;
         Face get_looking_face() const;
         glm::vec3 get_looking_block() const;
@@ -33,4 +34,5 @@ class Player : public Camera
         bool is_looking_face;
         Face looking_face;
         glm::vec3 looking_block;
+        float ray_range;
 };
