@@ -10,6 +10,7 @@
 #include<terrain/chunk.hpp>
 #include<terrain/terrain.hpp>
 #include<game/world.hpp>
+#include<engine/skybox.hpp>
 
 #include "camera.hpp"
 #include "texture_manager.hpp"
@@ -28,9 +29,11 @@ class Renderer
         void render_world(World& world);
         void render_face(Face f, const Chunk& chunk);
         void render_hud();
+        void render_skybox(Skybox& skybox);
 
         void load_model(const std::string& filename);
         void load_shader(const std::string& vertex_filename, const std::string& fragment_filename);
+        void load_skybox_shader(const std::string& vertex_filename, const std::string& fragment_filename);
         void load_texture(const std::string& filename);
 
         const glm::vec3& get_position() const;
@@ -43,4 +46,5 @@ class Renderer
         Model model;
         Texture texture;
         Shader shader;
+        Shader skybox_shader;
 };

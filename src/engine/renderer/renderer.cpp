@@ -11,7 +11,7 @@
 
 Renderer::Renderer(SDL_Window* win) : camera(win)
 {
-    render_distance = 8;
+    render_distance = 12;
 }
 
 Renderer::~Renderer(){}
@@ -78,6 +78,13 @@ void Renderer::render_world(World& world)
     if(world.get_player().is_looking_at_face())
         render_face(world.get_player().get_looking_face(), world.get_terrain().get_chunk_of_block(world.get_player().get_looking_block()));
     render_terrain(world.get_terrain());
+    shader.stop();
+
+    skybox_shader.start();
+    render_skybox(world.get_skybox());
+    skybox_shader.stop();
+
+    shader.start();
     render_hud();
     shader.stop();
 }
@@ -187,6 +194,22 @@ void Renderer::render_hud()
     glEnable(GL_DEPTH_TEST);
 }
 
+void Renderer::render_skybox(Skybox& skybox)
+{
+    skybox.start();
+
+    glm::mat4 view_matrix = camera.get_view_matrix();
+    for(int i = 0; i<3; ++i)
+        view_matrix[3][i] = 0.0f;
+
+    skybox_shader.set_uniform_variable(view_matrix, "view");
+    skybox_shader.set_uniform_variable(camera.get_projection_matrix(), "projection");
+
+    glDrawArrays(GL_TRIANGLES, 0, skybox.get_vertex_count());
+
+    skybox.stop();
+}
+
 void Renderer::update()
 {
     shader.set_uniform_variable(camera.get_view_matrix(), "view");
@@ -213,6 +236,12 @@ void Renderer::load_shader(const std::string& vertex_filename, const std::string
 {
     shader.stop();
     shader.load(vertex_filename, fragment_filename);
+}
+
+void Renderer::load_skybox_shader(const std::string& vertex_filename, const std::string& fragment_filename)
+{
+    skybox_shader.stop();
+    skybox_shader.load(vertex_filename, fragment_filename);
 }
 
 const glm::vec3& Renderer::get_position() const

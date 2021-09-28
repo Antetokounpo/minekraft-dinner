@@ -29,3 +29,8 @@ Terrain& World::get_terrain()
 {
     return terrain;
 }
+
+Skybox& World::get_skybox()
+{
+    return skybox;
+}

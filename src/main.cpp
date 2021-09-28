@@ -58,8 +58,10 @@ int main()
     Renderer renderer(window);
     renderer.load_texture("res/tex/atlas.png");
     renderer.load_shader("shaders/vertex_shader.glsl", "shaders/fragment_shader.glsl");
+    renderer.load_skybox_shader("shaders/skybox_vertex.glsl", "shaders/skybox_fragment.glsl");
     World world(window);
     world.get_terrain().set_seed(1234);
+    world.get_skybox().load({"res/tex/right.png", "res/tex/left.png", "res/tex/top.png", "res/tex/bottom.png", "res/tex/front.png", "res/tex/back.png"});
 
     SDL_GL_SetSwapInterval(1);
     SDL_ShowCursor(SDL_DISABLE);
@@ -93,7 +95,7 @@ int main()
                 world.handle_events(e);
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(1, 1, 0, 1);
+        glClearColor(1, 1, 1, 1);
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame();

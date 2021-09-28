@@ -35,7 +35,6 @@ build:
 
 debug: CXXFLAGS += -DDEBUG -g
 debug: all
-	gdb $(BUILD)/$(TARGET)
 
 profile: CXXFLAGS += -pg
 profile: debug
