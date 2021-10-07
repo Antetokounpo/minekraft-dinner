@@ -4,7 +4,7 @@
 #include<vector>
 
 #include<engine/model.hpp>
-#include "perlin.hpp"
+#include "noise_generator.hpp"
 #include "faces.hpp"
 
 class Chunk
@@ -18,7 +18,7 @@ class Chunk
 
         unsigned int get_block(unsigned int x, unsigned int y, unsigned int z) const;
         void set_block(unsigned x, unsigned y, unsigned z, unsigned b);
-        void generate(Perlin& perlin);
+        void generate(NoiseGenerator& generator);
         
         void build_mesh();
         void start() const;

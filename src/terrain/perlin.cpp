@@ -42,7 +42,7 @@ double Perlin::grad(int hash, double x, double y, double z)
     return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
 }
 
-double Perlin::noise(double x, double y, double z)
+double Perlin::perlin_noise(double x, double y, double z)
 {
     int xi = (int)floor(x) & 255;
     int yi = (int)floor(y) & 255;
@@ -76,7 +76,7 @@ double Perlin::noise(double x, double y, double z)
 
 double Perlin::perlin(double x, double y, double z)
 {
-    double n = noise(x, y, z);
+    double n = perlin_noise(x, y, z);
 
     /* Valeur de n entre -1 et 1 */ 
     return n * 0.5f + 0.5f;

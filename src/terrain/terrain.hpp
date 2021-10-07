@@ -7,7 +7,7 @@
 #include<glm/vec3.hpp>
 
 #include "chunk.hpp"
-#include "perlin.hpp"
+#include "noise_generator.hpp"
 
 class Terrain
 {
@@ -31,7 +31,7 @@ class Terrain
 
     private:
         void compute_visible_faces(int u, int v);
-        Perlin perlin;
+        NoiseGenerator noise_generator;
 
         std::unordered_map<int, std::unordered_map<int, Chunk>> chunks;
 };

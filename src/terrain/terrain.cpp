@@ -4,6 +4,7 @@
 #include<cmath>
 
 #include "chunk.hpp"
+#include "block.hpp"
 
 Terrain::Terrain(){}
 
@@ -11,7 +12,9 @@ Terrain::~Terrain(){}
 
 void Terrain::set_seed(unsigned int seed)
 {
-    perlin.set_seed(seed);
+    noise_generator.set_seed(seed);
+    noise_generator.set_frequency(1);
+    noise_generator.set_amplitude(25);
 }
 
 Chunk& Terrain::get_chunk(int x, int y)
@@ -70,7 +73,7 @@ bool Terrain::is_chunk(int x, int y)
 void Terrain::generate(int x, int y)
 {
     chunks[x][y].set_position(x, y);
-    chunks[x][y].generate(perlin);
+    chunks[x][y].generate(noise_generator);
 }
 
 std::vector<Face> Terrain::get_visible_faces(int u, int v)
@@ -101,70 +104,70 @@ void Terrain::compute_visible_faces(int u, int v)
                 if(i == 0)
                 {
                     if(!get_chunk(u-1, v).get_block(15, j, k))
-                        faces_to_render.push_back({i, j, k, OUEST, current_block-1});
+                        faces_to_render.push_back({i, j, k, OUEST, BLOCK_TYPES[current_block-1].tex_face_o});
                 }
                 else
                 {
                     if(!current_chunk.get_block(i-1, j, k))
-                        faces_to_render.push_back({i, j, k, OUEST, current_block-1});
+                        faces_to_render.push_back({i, j, k, OUEST, BLOCK_TYPES[current_block-1].tex_face_o});
                 }
 
                 /* NORD */
                 if(k == 15)
                 {
                     if(!get_chunk(u, v+1).get_block(i, j, 0))
-                        faces_to_render.push_back({i, j, k, NORD, current_block-1});
+                        faces_to_render.push_back({i, j, k, NORD, BLOCK_TYPES[current_block-1].tex_face_n});
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j, k+1))
-                        faces_to_render.push_back({i, j, k, NORD, current_block-1});
+                        faces_to_render.push_back({i, j, k, NORD, BLOCK_TYPES[current_block-1].tex_face_n});
                 }
 
                 /* EST */
                 if(i == 15)
                 {
                     if(!get_chunk(u+1, v).get_block(0, j, k))
-                        faces_to_render.push_back({i, j, k, EST, current_block-1});
+                        faces_to_render.push_back({i, j, k, EST, BLOCK_TYPES[current_block-1].tex_face_e});
                 }
                 else
                 {
                     if(!current_chunk.get_block(i+1, j, k))
-                        faces_to_render.push_back({i, j, k, EST, current_block-1});
+                        faces_to_render.push_back({i, j, k, EST, BLOCK_TYPES[current_block-1].tex_face_e});
                 }
 
                 /* SUD */
                 if(k == 0)
                 {
                     if(!get_chunk(u, v-1).get_block(i, j, 15))
-                        faces_to_render.push_back({i, j, k, SUD, current_block-1});
+                        faces_to_render.push_back({i, j, k, SUD, BLOCK_TYPES[current_block-1].tex_face_s});
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j, k-1))
-                        faces_to_render.push_back({i, j, k, SUD, current_block-1});
+                        faces_to_render.push_back({i, j, k, SUD, BLOCK_TYPES[current_block-1].tex_face_s});
                 }
 
                 /* DESSUS */
                 if(j == 255)
                 {
-                    faces_to_render.push_back({i, j, k, DESSUS, current_block-1});
+                    faces_to_render.push_back({i, j, k, DESSUS, BLOCK_TYPES[current_block-1].tex_face_u});
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j+1, k))
-                        faces_to_render.push_back({i, j, k, DESSUS, current_block-1});
+                        faces_to_render.push_back({i, j, k, DESSUS, BLOCK_TYPES[current_block-1].tex_face_u});
                 }
 
                 /* DESSOUS */
                 if(j == 0)
                 {
-                    faces_to_render.push_back({i, j, k, DESSOUS, current_block-1});
+                    faces_to_render.push_back({i, j, k, DESSOUS, BLOCK_TYPES[current_block-1].tex_face_d});
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j-1, k))
-                        faces_to_render.push_back({i, j, k, DESSOUS, current_block-1});
+                        faces_to_render.push_back({i, j, k, DESSOUS, BLOCK_TYPES[current_block-1].tex_face_d});
                 }
             }
         }

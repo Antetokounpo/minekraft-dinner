@@ -36,20 +36,22 @@ void Chunk::set_block(unsigned x, unsigned y, unsigned z, unsigned b)
     reset_visible_faces();
 }
 
-void Chunk::generate(Perlin& perlin)
+void Chunk::generate(NoiseGenerator& generator)
 {
     for(int i = 0; i<16; ++i)
         for(int k = 0; k<16; ++k)
         {
-            double h = perlin.perlin((double)x+((double)i/16), (double)z+((double)k/16), 0.0f);
+            double h = generator.noise((double)x+((double)i/16), (double)z+((double)k/16));
             for(int j = 0; j<256; ++j)
             {
-                if(j < h*25)
+                if(j < h)
                 {
-                    if(h > 0.5f)
-                        blocks[i][j][k] = 1;
-                    else
+                    if(h < 10.0f)
                         blocks[i][j][k] = 2;
+                    else if(j == (int)h && h > 12.0f)
+                        blocks[i][j][k] = 3;
+                    else
+                        blocks[i][j][k] = 1;
                 }
                 else
                     blocks[i][j][k] = 0;
@@ -116,10 +118,7 @@ void Chunk::build_mesh()
         cnt += 1;
     }
 
-    chunk_mesh.load(&mesh_vertices[0], mesh_vertices.size()*sizeof(mesh_vertices[0]), 
-                    &mesh_uvs[0], mesh_uvs.size()*sizeof(mesh_uvs[0]),
-                    &mesh_normals[0], mesh_normals.size()*sizeof(mesh_normals[0]),
-                    &mesh_indices[0], mesh_indices.size()*sizeof(mesh_indices[0]));
+    chunk_mesh.load(mesh_vertices, mesh_uvs, mesh_normals, mesh_indices);
 }
 
 void Chunk::start() const
