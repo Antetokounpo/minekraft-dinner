@@ -75,9 +75,10 @@ void Renderer::render_world(World& world)
 
     update();
 
+    render_terrain(world.get_terrain());
     if(world.get_player().is_looking_at_face())
         render_face(world.get_player().get_looking_face(), world.get_terrain().get_chunk_of_block(world.get_player().get_looking_block()));
-    render_terrain(world.get_terrain());
+    
     shader.stop();
 
     skybox_shader.start();
@@ -94,21 +95,42 @@ void Renderer::render_face(Face f, const Chunk& chunk)
     const auto& [x, y, z, o, t] = f;
     const auto& [u, v] = chunk.get_position();
     auto face_vertices = faces[o];
-    std::array<float, 8> uvs = {
-        0.0f, 0.0f,
-        1.0f/(atlas_w/tex_w), 1.0f/(atlas_h/tex_h),
-        0.0f, 1.0f/(atlas_h/tex_h),
-        1.0f/(atlas_w/tex_w), 0.0f
-    };
 
-        std::vector<float> temp_uvs (uvs.begin(), uvs.end());
-        for(unsigned c = 0; c<temp_uvs.size(); c += 2)
-        {
-            unsigned u = t % (atlas_w/tex_w);
-            temp_uvs[c] += u * 1.0f/(atlas_w/tex_w);
-            u = t / (atlas_w/tex_w);
-            temp_uvs[c+1] += u * 1.0f/(atlas_h/tex_h);
-        }
+    /* Petit offset qui va placer la face "highlit" un peu par-dessus la face qu'on vise réellement pour qu'on voit la texture du bloc
+       au travers du highlight. Ce vecteur est additionner à la translation plus tard.
+    */
+    glm::vec3 highlight_offset = {0, 0, 0};
+    switch (o)
+    {
+    case SUD:
+        highlight_offset = {0.0, 0.0, -1.0f};
+        break;
+    case EST:
+        highlight_offset = {1.0f, 0.0, 0.0};
+        break;
+    case NORD:
+        highlight_offset = {0.0, 0.0, 1.0f};
+        break;
+    case OUEST:
+        highlight_offset = {-1.0f, 0.0f, 0.0f};
+        break;
+    case DESSUS:
+        highlight_offset = {0.0f, 1.0f, 0.0f};
+        break;
+    case DESSOUS:
+        highlight_offset = {0.0f, -1.0f, 0.0f};
+        break;
+    default:
+        break;
+    }
+    highlight_offset *= 0.01f;
+
+    std::vector<float> uvs = {
+        0.0f, 0.0f,
+        1.0f, 1.0f,
+        0.0f, 1.0f,
+        1.0f, 0.0f,
+    };
 
     std::vector<float> normals = {
         0.0f, 0.0f, -1.0f,
@@ -124,16 +146,16 @@ void Renderer::render_face(Face f, const Chunk& chunk)
 
     Model face_model;
     face_model.load(&face_vertices[0], face_vertices.size()*sizeof(face_vertices[0]), 
-                    &temp_uvs[0], temp_uvs.size()*sizeof(temp_uvs[0]),
+                    &uvs[0], uvs.size()*sizeof(uvs[0]),
                     &normals[0], normals.size()*sizeof(normals[0]),
                     &indices[0], indices.size()*sizeof(indices[0]));
     Texture face_texture;
-    face_texture.load("res/tex/atlas.png");
+    face_texture.set_texture_color(255, 255, 255, 100);
 
     face_model.start();
     face_texture.start();
     
-    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {(int)x+u*16, y, (int)z+v*16}),  "model");
+    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), glm::vec3({(int)x+u*16, y, (int)z+v*16})+highlight_offset),  "model");
     glDrawElements(GL_TRIANGLES, face_model.get_vertex_count(), GL_UNSIGNED_INT, 0);
 
     face_model.stop();
