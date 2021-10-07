@@ -60,18 +60,6 @@ void Player::update(Terrain& t)
     is_building = mouse_state & SDL_BUTTON_RMASK;
 }
 
-bool Player::check_collision(Terrain& t)
-{
-    unsigned block;
-    block = t.get_block(player_position.x, player_position.y, player_position.z);
-    if(!block)
-    {
-        return false;
-    }
-
-    return true;
-}
-
 void Player::check_block_interaction(Terrain& t)
 {
     unsigned block;
@@ -100,7 +88,7 @@ void Player::check_block_interaction(Terrain& t)
         face = (ray.z > 0) ? SUD : NORD;
 
     is_looking_face = (bool)block;
-    looking_face = {(unsigned)floor(looking_block.x) % 16, (unsigned)floor(looking_block.y), (unsigned)floor(looking_block.z) % 16, face, 2};
+    looking_face = {(unsigned)floor(looking_block.x) % 16, (unsigned)floor(looking_block.y), (unsigned)floor(looking_block.z) % 16, face, 0}; // On se fout du type de block ici
 
     if(block && is_punching)
         t.set_block(looking_block, 0);

@@ -14,7 +14,6 @@ class Player : public Camera
         void update(Terrain& t);
         void update_position(Terrain& t, float delta);
 
-        bool check_collision(Terrain& t);
         void check_block_interaction(Terrain& t);
         glm::vec3 get_ray();
         bool is_looking_at_face() const;

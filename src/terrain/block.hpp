@@ -5,11 +5,18 @@
 typedef struct Block
 {
     std::string name;
-    std::string texture_path;
+    unsigned block_id;
+    unsigned tex_face_s; // SUD
+    unsigned tex_face_e; // EST
+    unsigned tex_face_n; // NORD
+    unsigned tex_face_o; // OUEST
+    unsigned tex_face_u; // DESSUS
+    unsigned tex_face_d; // DESSOUS
 } Block;
 
 
 static Block BLOCK_TYPES[] = {
-    {"Dirt", "res/tex/dirt.png"},
-    {"Stone", "res/tex/stone.png"}
+    {"Dirt", 1, 0, 0, 0, 0, 0, 0},
+    {"Stone", 2, 1, 1, 1, 1, 1, 1},
+    {"Grass", 3, 2, 2, 2, 2, 2, 2}
 };

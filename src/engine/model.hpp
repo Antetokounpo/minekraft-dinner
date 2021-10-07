@@ -12,7 +12,7 @@ class Model
         ~Model();
         void load(const std::string& obj_filename);
         void load(float vertices[], size_t s_vertices, float uvs[], size_t s_uvs, float normals[], size_t s_normals, unsigned int indices[], size_t s_indices);
-        void render();
+        void load(std::vector<float>& vertices, std::vector<float>& uvs, std::vector<float>& normals, std::vector<unsigned>& indices);
         void start() const;
         void stop() const;
         int get_vertex_count() const;

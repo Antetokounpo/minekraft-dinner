@@ -104,7 +104,7 @@ int main()
         world.update();
         renderer.render_world(world);
 
-        ImGui::Begin("Debug Info");
+        ImGui::Begin("Coords");
         ImGui::TextColored(ImVec4(0, 0.5, 1, 1), ("X : " + std::to_string(world.get_player().get_position().x)).c_str());
         ImGui::TextColored(ImVec4(0, 1, 0, 1), ("Y : " + std::to_string(world.get_player().get_position().y)).c_str());
         ImGui::TextColored(ImVec4(1, 0, 0, 1), ("Z : " + std::to_string(world.get_player().get_position().z)).c_str());
