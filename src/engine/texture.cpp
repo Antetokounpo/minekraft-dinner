@@ -29,7 +29,7 @@ void Texture::set_texture_color(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
     SDL_LockSurface(surface);
 
     Uint32 color = SDL_MapRGBA(surface->format, r, g, b, a);
-    Uint32* pixels = (Uint32*)surface->pixels;
+    Uint8* pixels = (Uint8*)surface->pixels;
 
     for(int i = 0; i<surface->w * surface->h; ++i)
     {
