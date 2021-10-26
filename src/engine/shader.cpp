@@ -48,9 +48,10 @@ void Shader::compile_shader(const std::string& source, GLuint shader_id)
     glGetShaderiv(shader_id, GL_INFO_LOG_LENGTH, &info_length);
     if(info_length > 0)
     {
-        char error_msg[info_length+1];
+        char* error_msg = new char[info_length+1];
         glGetShaderInfoLog(shader_id, info_length, NULL, error_msg);
         std::cout << "Error compiling shader: " << error_msg << std::endl;
+        delete[] error_msg;
     }
 }
 
@@ -92,9 +93,10 @@ void Shader::load(const std::string& vertex_shader_file, const std::string& frag
     glGetProgramiv(shader_program, GL_INFO_LOG_LENGTH, &info_length);
     if(info_length > 0)
     {
-        char error_msg[info_length+1];
+        char* error_msg = new char[info_length+1];
         glGetProgramInfoLog(shader_program, info_length, NULL, error_msg);
         std::cout << "Error linking shader program: " << error_msg << std::endl;
+        delete[] error_msg;
     }
 
     glDetachShader(shader_program, vertex_shader);
