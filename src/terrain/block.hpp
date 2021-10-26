@@ -12,11 +12,13 @@ typedef struct Block
     unsigned tex_face_o; // OUEST
     unsigned tex_face_u; // DESSUS
     unsigned tex_face_d; // DESSOUS
+    bool transparent;
 } Block;
 
 
 static Block BLOCK_TYPES[] = {
+    {"Air", 0}, // On se crisse du reste
     {"Dirt", 1, 0, 0, 0, 0, 0, 0},
     {"Stone", 2, 1, 1, 1, 1, 1, 1},
-    {"Grass", 3, 2, 2, 2, 2, 2, 2}
+    {"Grass", 3, 3, 3, 3, 3, 2, 0}
 };

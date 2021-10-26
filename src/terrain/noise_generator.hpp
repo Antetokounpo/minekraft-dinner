@@ -8,11 +8,13 @@ class NoiseGenerator : public Perlin
         NoiseGenerator();
         ~NoiseGenerator();
 
-        void set_frequency(double f);
-        void set_amplitude(double a);
+        void add_octave(double a, double f);
 
         double noise(double x, double y, double z=0.0f);
     private:
+        std::vector<double> amplitudes;
+        std::vector<double> frequencies;
+
         double frequency;
         double amplitude;
 
