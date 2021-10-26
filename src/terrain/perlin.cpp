@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <algorithm>
+#include<random>
 #include <cstdlib>
 #include <cmath>
 
@@ -15,8 +16,7 @@ void Perlin::set_seed(unsigned int seed)
     for (int i = 0; i < 256; ++i)
         permutation.push_back(i);
 
-    std::srand(seed);
-    std::random_shuffle(permutation.begin(), permutation.end());
+    std::shuffle(permutation.begin(), permutation.end(), std::mt19937(seed));
 
     p.clear();
     for (int i = 0; i < 512; ++i)
