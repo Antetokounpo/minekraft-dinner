@@ -20,5 +20,6 @@ static Block BLOCK_TYPES[] = {
     {"Air", 0}, // On se crisse du reste
     {"Dirt", 1, 0, 0, 0, 0, 0, 0},
     {"Stone", 2, 1, 1, 1, 1, 1, 1},
-    {"Grass", 3, 3, 3, 3, 3, 2, 0}
+    {"Grass", 3, 3, 3, 3, 3, 2, 0},
+    {"Sand", 4, 4, 4, 4, 4, 4, 0}
 };

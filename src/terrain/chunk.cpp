@@ -46,7 +46,9 @@ void Chunk::generate(NoiseGenerator& generator)
             {
                 if(j < h)
                 {
-                    if(h < 10.0f)
+                    if(j == 60)
+                        blocks[i][j][k] = 4;
+                    else if(h < 10.0f)
                         blocks[i][j][k] = 2;
                     else if(j == (int)h && h > 12.0f)
                         blocks[i][j][k] = 3;
