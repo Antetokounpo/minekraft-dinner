@@ -20,7 +20,7 @@ class Terrain
         Chunk& get_chunk_of_block(double x, double y, double z);
         Chunk& get_chunk_of_block(glm::vec3 v);
 
-        unsigned int get_block(double x, double y, double z);
+        unsigned get_block(double x, double y, double z);
         unsigned get_block(glm::vec3 v);
         void set_block(double x, double y, double z, unsigned b);
         void set_block(glm::vec3 v, unsigned b);

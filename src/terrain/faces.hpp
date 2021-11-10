@@ -5,12 +5,12 @@
 
 enum FaceOrientation
 {
-    SUD,
-    EST,
-    NORD,
-    OUEST,
-    DESSUS,
-    DESSOUS
+    SUD     ,
+    EST     ,
+    NORD    ,
+    OUEST   ,
+    DESSUS  ,
+    DESSOUS ,
 };
 
 struct Face

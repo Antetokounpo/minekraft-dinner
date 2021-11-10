@@ -6,6 +6,9 @@
 #include "chunk.hpp"
 #include "block.hpp"
 
+#include<chrono> // profile
+#include<iostream>
+
 Terrain::Terrain(){}
 
 Terrain::~Terrain(){}
@@ -87,8 +90,11 @@ std::vector<Face> Terrain::get_visible_faces(int u, int v)
 
 void Terrain::compute_visible_faces(int u, int v)
 {
+    // temps moyen : ~ 8500 microsecondes
+    auto start = std::chrono::high_resolution_clock::now();
     Chunk& current_chunk = get_chunk(u, v);
     std::vector<Face> faces_to_render;
+    std::vector<Face> transparent_faces_to_render;
 
     for(unsigned i = 0; i<16; ++i)
     {
@@ -96,98 +102,128 @@ void Terrain::compute_visible_faces(int u, int v)
         {
             for(unsigned k = 0; k<16; ++k)
             {
-                unsigned current_block = current_chunk.get_block(i, j, k);
-                
-                if(current_block == 0)
-                    continue;
+                auto current_block = current_chunk.get_block(i, j, k);
+                auto current_block_data = BLOCK_TYPES[current_block];
 
+                if(current_block == 0) // Si c'est de l'air, on skip
+                    continue;
+                
+                uint8_t block_mask = 0x0;
+                
                 /* OUEST */
                 if(i == 0)
                 {
                     if(!get_chunk(u-1, v).get_block(15, j, k))
-                        faces_to_render.push_back({i, j, k, OUEST, BLOCK_TYPES[current_block].tex_face_o});
+                        block_mask |= (0x1 << OUEST);
                 }
                 else
                 {
                     if(!current_chunk.get_block(i-1, j, k))
-                        faces_to_render.push_back({i, j, k, OUEST, BLOCK_TYPES[current_block].tex_face_o});
+                        block_mask |= (0x1 << OUEST);
                 }
 
                 /* NORD */
                 if(k == 15)
                 {
                     if(!get_chunk(u, v+1).get_block(i, j, 0))
-                        faces_to_render.push_back({i, j, k, NORD, BLOCK_TYPES[current_block].tex_face_n});
+                        block_mask |= (0x1 << NORD);
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j, k+1))
-                        faces_to_render.push_back({i, j, k, NORD, BLOCK_TYPES[current_block].tex_face_n});
+                        block_mask |= (0x1 << NORD);
                 }
 
                 /* EST */
                 if(i == 15)
                 {
                     if(!get_chunk(u+1, v).get_block(0, j, k))
-                        faces_to_render.push_back({i, j, k, EST, BLOCK_TYPES[current_block].tex_face_e});
+                        block_mask |= (0x1 << EST);
                 }
                 else
                 {
                     if(!current_chunk.get_block(i+1, j, k))
-                        faces_to_render.push_back({i, j, k, EST, BLOCK_TYPES[current_block].tex_face_e});
+                        block_mask |= (0x1 << EST);
                 }
 
                 /* SUD */
                 if(k == 0)
                 {
                     if(!get_chunk(u, v-1).get_block(i, j, 15))
-                        faces_to_render.push_back({i, j, k, SUD, BLOCK_TYPES[current_block].tex_face_s});
+                        block_mask |= (0x1 << SUD);
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j, k-1))
-                        faces_to_render.push_back({i, j, k, SUD, BLOCK_TYPES[current_block].tex_face_s});
+                        block_mask |= (0x1 << SUD);
                 }
 
                 /* DESSUS */
                 if(j == 255)
                 {
-                    faces_to_render.push_back({i, j, k, DESSUS, BLOCK_TYPES[current_block].tex_face_u});
+                    block_mask |= (0x1 << DESSUS);
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j+1, k))
-                        faces_to_render.push_back({i, j, k, DESSUS, BLOCK_TYPES[current_block].tex_face_u});
+                        block_mask |= (0x1 << DESSUS);
                 }
 
                 /* DESSOUS */
                 if(j == 0)
                 {
-                    faces_to_render.push_back({i, j, k, DESSOUS, BLOCK_TYPES[current_block].tex_face_d});
+                    block_mask |= (0x1 << DESSOUS);
                 }
                 else
                 {
                     if(!current_chunk.get_block(i, j-1, k))
-                        faces_to_render.push_back({i, j, k, DESSOUS, BLOCK_TYPES[current_block].tex_face_d});
+                        block_mask |= (0x1 << DESSOUS);
+                }
+ 
+                FaceOrientation face_o;
+                unsigned tex_face_id;
+                for(int u = 0; u<6; ++u)
+                {
+                    face_o = (FaceOrientation)u;
+                    if(block_mask & (0x1 << face_o))
+                    {
+                        switch (face_o)
+                        {
+                        case SUD:
+                            tex_face_id = current_block_data.tex_face_s; 
+                            break;
+                        case EST:
+                            tex_face_id = current_block_data.tex_face_e;
+                            break;
+                        case NORD:
+                            tex_face_id = current_block_data.tex_face_n;
+                            break;
+                        case OUEST:
+                            tex_face_id = current_block_data.tex_face_o;
+                            break;
+                        case DESSUS:
+                            tex_face_id = current_block_data.tex_face_u;
+                            break;
+                        case DESSOUS:
+                            tex_face_id = current_block_data.tex_face_d;
+                            break;
+                        default:
+                            break;
+                        }
+                        
+                        if(current_block_data.transparent)
+                            transparent_faces_to_render.push_back({i, j, k, face_o, tex_face_id});
+                        else
+                            faces_to_render.push_back({i, j, k, face_o, tex_face_id});
+                    }
                 }
             }
         }
     }
 
-    std::sort(faces_to_render.begin(), faces_to_render.end(),
-        [&current_chunk](Face a, Face b)
-        {
-            const auto& [x, y, z, w, v] = a;
-            const auto& [i, j, k, m, n] = b;
-            if(current_chunk.get_block(x, y, z) < current_chunk.get_block(i, j, k)) return true;
-            if(current_chunk.get_block(i, j, k) < current_chunk.get_block(x, y, z)) return false;
-
-            if(w < m) return true;
-            if(m < w) return false;
-
-            return false;
-        }
-    );
-
     current_chunk.set_visible_faces(faces_to_render);
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop-start);
+
+    std::cout << duration.count() << " microseconds" << std::endl;
 }

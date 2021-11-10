@@ -7,6 +7,8 @@
 
 #include "faces.hpp"
 
+#include<iostream> // debugma
+
 Chunk::Chunk()
 {
     visible_faces = {};
@@ -25,7 +27,7 @@ std::tuple<int, int> Chunk::get_position() const
     return std::make_tuple(x, z);
 }
 
-unsigned int Chunk::get_block(unsigned int x, unsigned int y, unsigned int z) const
+unsigned Chunk::get_block(unsigned int x, unsigned int y, unsigned int z) const
 {
     return blocks[x][y][z];
 }
@@ -46,9 +48,9 @@ void Chunk::generate(NoiseGenerator& generator)
             {
                 if(j < h)
                 {
-                    if(j == 60)
+                    if(j <= 50 && j >= 45)
                         blocks[i][j][k] = 4;
-                    else if(h < 10.0f)
+                    else if(j < 45.0f)
                         blocks[i][j][k] = 2;
                     else if(j == (int)h && h > 12.0f)
                         blocks[i][j][k] = 3;
@@ -57,6 +59,9 @@ void Chunk::generate(NoiseGenerator& generator)
                 }
                 else
                     blocks[i][j][k] = 0;
+                
+                if(j <= 50 && blocks[i][j][k] == 0)
+                    blocks[i][j][k] = 5;
             }
         }
 }
@@ -92,7 +97,7 @@ void Chunk::build_mesh()
     {
         auto& [i, j, k, f, t] = face;
 
-        std::vector<float> temp_vertices (faces[f].begin(), faces[f].end());
+        std::vector<float> temp_vertices (faces[f].begin(), faces[f].end()); // On peut pas changer les valeurs de l'enum à cause de ça ici.
         for(unsigned c = 0; c<temp_vertices.size(); c += 3)
         {
             temp_vertices[c]   += i;

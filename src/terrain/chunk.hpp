@@ -6,6 +6,7 @@
 #include<engine/model.hpp>
 #include "noise_generator.hpp"
 #include "faces.hpp"
+#include "block.hpp"
 
 class Chunk
 {
@@ -16,7 +17,7 @@ class Chunk
         void set_position(int i, int k);
         std::tuple<int, int> get_position() const;
 
-        unsigned int get_block(unsigned int x, unsigned int y, unsigned int z) const;
+        unsigned get_block(unsigned int x, unsigned int y, unsigned int z) const;
         void set_block(unsigned x, unsigned y, unsigned z, unsigned b);
         void generate(NoiseGenerator& generator);
         

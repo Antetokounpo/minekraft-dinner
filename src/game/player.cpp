@@ -7,7 +7,7 @@
 
 Player::Player(SDL_Window* win) : Camera(win)
 {
-    player_position = {0.0f, 20.0f, 0.0f};
+    player_position = {0.0f, 100.0f, 0.0f};
 
     is_punching = false;
     is_building = false;
