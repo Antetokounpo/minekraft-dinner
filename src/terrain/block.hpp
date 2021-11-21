@@ -17,7 +17,7 @@ typedef struct Block
 
 
 static Block BLOCK_TYPES[] = {
-    {"Air", 0}, // On se crisse du reste
+    {"Air", 0, 0, 0, 0, 0, 0, 0, true}, // On se crisse du reste
     {"Dirt", 1, 0, 0, 0, 0, 0, 0, false},
     {"Stone", 2, 1, 1, 1, 1, 1, 1, false},
     {"Grass", 3, 3, 3, 3, 3, 2, 0, false},

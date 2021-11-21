@@ -18,14 +18,24 @@ Renderer::~Renderer(){}
 
 void Renderer::render_chunk(const Chunk& chunk)
 {
+    const auto& [u, v] = chunk.get_position();
+
     chunk.start();
     texture.start();
-    const auto& [u, v] = chunk.get_position();
 
     shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {u*16, 0, v*16}), "model");
     glDrawElements(GL_TRIANGLES, chunk.get_vertex_count(), GL_UNSIGNED_INT, 0);
 
     chunk.stop();
+    texture.stop();
+
+    chunk.start_transparent();
+    texture.start();
+
+    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {u*16, 0, v*16}), "model");
+    glDrawElements(GL_TRIANGLES, chunk.get_transparent_vertex_count(), GL_UNSIGNED_INT, 0);
+
+    chunk.stop_transparent();
     texture.stop();
 }
 
@@ -56,15 +66,21 @@ void Renderer::render_terrain(Terrain& terrain)
     }
 
     bool generated = false;
+    bool visible_faces = false;
     for(auto& [u, v] : chunks_to_render)
     {
-        std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
-        if(!terrain.is_chunk(u, v)) generated = true;
-        Chunk& chunk = terrain.get_chunk(u, v);
+       if(!generated || terrain.is_chunk(u, v))
+        {
+            if(!terrain.is_chunk(u, v)) generated = true;
+            Chunk& chunk = terrain.get_chunk(u, v);
 
-        if(generated) // 1 seule génération par call
-            continue;
-        render_chunk(chunk);
+            if(!visible_faces || chunk.is_visible_faces()) // 1 seule génération par call
+            {
+                std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
+                if(!chunk.is_visible_faces()) visible_faces = true;
+                render_chunk(chunk);
+            }
+        }
     }
 }
 

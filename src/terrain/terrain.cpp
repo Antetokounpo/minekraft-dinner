@@ -91,7 +91,7 @@ std::vector<Face> Terrain::get_visible_faces(int u, int v)
 void Terrain::compute_visible_faces(int u, int v)
 {
     // temps moyen : ~ 8500 microsecondes
-    auto start = std::chrono::high_resolution_clock::now();
+    //auto start = std::chrono::high_resolution_clock::now();
     Chunk& current_chunk = get_chunk(u, v);
     std::vector<Face> faces_to_render;
     std::vector<Face> transparent_faces_to_render;
@@ -113,48 +113,48 @@ void Terrain::compute_visible_faces(int u, int v)
                 /* OUEST */
                 if(i == 0)
                 {
-                    if(!get_chunk(u-1, v).get_block(15, j, k))
+                    if(get_chunk(u-1, v).is_block_transparent(15, j, k))
                         block_mask |= (0x1 << OUEST);
                 }
                 else
                 {
-                    if(!current_chunk.get_block(i-1, j, k))
+                    if(current_chunk.is_block_transparent(i-1, j, k))
                         block_mask |= (0x1 << OUEST);
                 }
 
                 /* NORD */
                 if(k == 15)
                 {
-                    if(!get_chunk(u, v+1).get_block(i, j, 0))
+                    if(get_chunk(u, v+1).is_block_transparent(i, j, 0))
                         block_mask |= (0x1 << NORD);
                 }
                 else
                 {
-                    if(!current_chunk.get_block(i, j, k+1))
+                    if(current_chunk.is_block_transparent(i, j, k+1))
                         block_mask |= (0x1 << NORD);
                 }
 
                 /* EST */
                 if(i == 15)
                 {
-                    if(!get_chunk(u+1, v).get_block(0, j, k))
+                    if(get_chunk(u+1, v).is_block_transparent(0, j, k))
                         block_mask |= (0x1 << EST);
                 }
                 else
                 {
-                    if(!current_chunk.get_block(i+1, j, k))
+                    if(current_chunk.is_block_transparent(i+1, j, k))
                         block_mask |= (0x1 << EST);
                 }
 
                 /* SUD */
                 if(k == 0)
                 {
-                    if(!get_chunk(u, v-1).get_block(i, j, 15))
+                    if(get_chunk(u, v-1).is_block_transparent(i, j, 15))
                         block_mask |= (0x1 << SUD);
                 }
                 else
                 {
-                    if(!current_chunk.get_block(i, j, k-1))
+                    if(current_chunk.is_block_transparent(i, j, k-1))
                         block_mask |= (0x1 << SUD);
                 }
 
@@ -165,7 +165,7 @@ void Terrain::compute_visible_faces(int u, int v)
                 }
                 else
                 {
-                    if(!current_chunk.get_block(i, j+1, k))
+                    if(current_chunk.is_block_transparent(i, j+1, k))
                         block_mask |= (0x1 << DESSUS);
                 }
 
@@ -176,7 +176,7 @@ void Terrain::compute_visible_faces(int u, int v)
                 }
                 else
                 {
-                    if(!current_chunk.get_block(i, j-1, k))
+                    if(current_chunk.is_block_transparent(i, j-1, k))
                         block_mask |= (0x1 << DESSOUS);
                 }
  
@@ -222,8 +222,12 @@ void Terrain::compute_visible_faces(int u, int v)
     }
 
     current_chunk.set_visible_faces(faces_to_render);
+    current_chunk.set_transparent_faces(transparent_faces_to_render); // pas optimisé, on call build_mesh() deux en faisant ça
+
+    /*
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop-start);
 
     std::cout << duration.count() << " microseconds" << std::endl;
+    */
 }
