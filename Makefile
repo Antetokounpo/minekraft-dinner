@@ -2,7 +2,7 @@
 
 CXX      := g++
 CXXFLAGS := -Wall -std=c++17 -DGLM_ENABLE_EXPERIMENTAL
-LDFLAGS  := -lSDL2 -lSDL2_image -lGL -lGLEW
+LDFLAGS  := -lSDL2 -lSDL2_image
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 TARGET   := minekraft
@@ -16,6 +16,12 @@ SRC      := $(wildcard lib/imgui/*.cpp) \
 			$(wildcard src/game/*.cpp)
 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+
+ifeq ($(OS), Windows_NT)
+	LDFLAGS += -lopengl32 -lglew32
+else
+	LDFLAGS += -lGL -lGLEW
+endif
 
 all: build $(BUILD)/$(TARGET)
 

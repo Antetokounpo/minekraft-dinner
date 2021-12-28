@@ -2,6 +2,10 @@
 
 #include<string>
 #include<cmath>
+#ifndef M_PI
+    #define M_PI acos(-1)
+    #define M_PI_2 M_PI/2
+#endif
 
 #include<GL/glew.h>
 #include<glm/glm.hpp>

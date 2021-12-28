@@ -28,7 +28,11 @@ void opengl_debug_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
     std::cout << message << '\n';
 }
 
+#ifdef _WIN64
+int WinMain()
+#else
 int main()
+#endif
 {
     if(SDL_Init(SDL_INIT_VIDEO) != 0)
     {
