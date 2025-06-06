@@ -1,6 +1,7 @@
 #include "chunk.hpp"
 
 #include<cstdlib>
+#include<cmath>
 #include<algorithm>
 
 #include<engine/loaders/objloader.hpp>
@@ -54,6 +55,7 @@ void Chunk::generate(NoiseGenerator& generator)
         for(int k = 0; k<16; ++k)
         {
             double h = generator.noise((double)x+((double)i/16), (double)z+((double)k/16));
+            //h = round(h * 4) / 4;
             for(int j = 0; j<256; ++j)
             {
                 if(j < h)
@@ -139,6 +141,9 @@ void Chunk::build_mesh()
 
     chunk_mesh.load(mesh_vertices, mesh_uvs, mesh_normals, mesh_indices);
 
+    if(transparent_faces.empty()){
+        return;
+    }
 
     mesh_vertices = {};
     mesh_uvs = {};
