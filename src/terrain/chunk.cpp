@@ -42,6 +42,11 @@ bool Chunk::is_block_transparent(unsigned x, unsigned y, unsigned z) const
     return transparent_blocks[x][y][z];
 }
 
+bool Chunk::is_block_air(unsigned x, unsigned y, unsigned z) const
+{
+    return get_block(x, y, z) == 0;
+}
+
 void Chunk::set_block(unsigned x, unsigned y, unsigned z, unsigned b)
 {
     blocks[x][y][z] = b;
@@ -82,6 +87,9 @@ void Chunk::generate(NoiseGenerator& generator)
 
 void Chunk::build_mesh()
 {
+    if(visible_faces.empty())
+        return;
+
     const std::array<unsigned, 6> indices = {
         0, 1, 2,
         1, 0, 3
@@ -140,17 +148,38 @@ void Chunk::build_mesh()
     }
 
     chunk_mesh.load(mesh_vertices, mesh_uvs, mesh_normals, mesh_indices);
+}
 
-    if(transparent_faces.empty()){
+void Chunk::build_transparent_mesh()
+{
+    if(transparent_faces.empty())
         return;
-    }
 
-    mesh_vertices = {};
-    mesh_uvs = {};
-    mesh_normals = {};
-    mesh_indices = {};
+    const std::array<unsigned, 6> indices = {
+        0, 1, 2,
+        1, 0, 3
+    };
 
-    cnt = 0;
+    const std::array<float, 8> uvs = {
+        0.0f, 0.0f,
+        1.0f/(atlas_w/tex_w), 1.0f/(atlas_h/tex_h),
+        0.0f, 1.0f/(atlas_h/tex_h),
+        1.0f/(atlas_w/tex_w), 0.0f
+    };
+
+    const std::array<float, 12> normals = {
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+        0.0f, 0.0f, -1.0f,
+    };
+
+    std::vector<float> mesh_vertices = {};
+    std::vector<float> mesh_uvs = {};
+    std::vector<float> mesh_normals = {};
+    std::vector<unsigned> mesh_indices = {};
+
+    unsigned cnt = 0;
     for(const auto& face : transparent_faces)
     {
         const auto& [i, j, k, f, t] = face;
@@ -225,7 +254,7 @@ void Chunk::set_visible_faces(const std::vector<Face>& visible_f)
 void Chunk::set_transparent_faces(const std::vector<Face>& transparent_f)
 {
     transparent_faces = transparent_f;
-    build_mesh(); // pas optimisé
+    build_transparent_mesh(); // pas optimisé
 }
 
 std::vector<Face> Chunk::get_visible_faces() const

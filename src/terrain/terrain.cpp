@@ -88,6 +88,162 @@ std::vector<Face> Terrain::get_visible_faces(int u, int v)
     return chunk.get_visible_faces();
 }
 
+uint8_t Terrain::visible_faces_mask(Chunk& current_chunk, unsigned i, unsigned j, unsigned k)
+{
+    uint8_t block_mask = 0x0;
+    auto [u, v] = current_chunk.get_position();
+
+    /* OUEST */
+    if (i == 0)
+    {
+        if (get_chunk(u - 1, v).is_block_transparent(15, j, k))
+            block_mask |= (0x1 << OUEST);
+    }
+    else
+    {
+        if (current_chunk.is_block_transparent(i - 1, j, k))
+            block_mask |= (0x1 << OUEST);
+    }
+
+    /* NORD */
+    if (k == 15)
+    {
+        if (get_chunk(u, v + 1).is_block_transparent(i, j, 0))
+            block_mask |= (0x1 << NORD);
+    }
+    else
+    {
+        if (current_chunk.is_block_transparent(i, j, k + 1))
+            block_mask |= (0x1 << NORD);
+    }
+
+    /* EST */
+    if (i == 15)
+    {
+        if (get_chunk(u + 1, v).is_block_transparent(0, j, k))
+            block_mask |= (0x1 << EST);
+    }
+    else
+    {
+        if (current_chunk.is_block_transparent(i + 1, j, k))
+            block_mask |= (0x1 << EST);
+    }
+
+    /* SUD */
+    if (k == 0)
+    {
+        if (get_chunk(u, v - 1).is_block_transparent(i, j, 15))
+            block_mask |= (0x1 << SUD);
+    }
+    else
+    {
+        if (current_chunk.is_block_transparent(i, j, k - 1))
+            block_mask |= (0x1 << SUD);
+    }
+
+    /* DESSUS */
+    if (j == 255)
+    {
+        block_mask |= (0x1 << DESSUS);
+    }
+    else
+    {
+        if (current_chunk.is_block_transparent(i, j + 1, k))
+            block_mask |= (0x1 << DESSUS);
+    }
+
+    /* DESSOUS */
+    if (j == 0)
+    {
+        block_mask |= (0x1 << DESSOUS);
+    }
+    else
+    {
+        if (current_chunk.is_block_transparent(i, j - 1, k))
+            block_mask |= (0x1 << DESSOUS);
+    }
+
+    return block_mask;
+}
+
+uint8_t Terrain::visible_transparent_faces_mask(Chunk& current_chunk, unsigned i, unsigned j, unsigned k)
+{
+    uint8_t block_mask = 0x0;
+    auto [u, v] = current_chunk.get_position();
+
+    /* OUEST */
+    if (i == 0)
+    {
+        if (get_chunk(u - 1, v).is_block_air(15, j, k))
+            block_mask |= (0x1 << OUEST);
+    }
+    else
+    {
+        if (current_chunk.is_block_air(i - 1, j, k))
+            block_mask |= (0x1 << OUEST);
+    }
+
+    /* NORD */
+    if (k == 15)
+    {
+        if (get_chunk(u, v + 1).is_block_air(i, j, 0))
+            block_mask |= (0x1 << NORD);
+    }
+    else
+    {
+        if (current_chunk.is_block_air(i, j, k + 1))
+            block_mask |= (0x1 << NORD);
+    }
+
+    /* EST */
+    if (i == 15)
+    {
+        if (get_chunk(u + 1, v).is_block_air(0, j, k))
+            block_mask |= (0x1 << EST);
+    }
+    else
+    {
+        if (current_chunk.is_block_air(i + 1, j, k))
+            block_mask |= (0x1 << EST);
+    }
+
+    /* SUD */
+    if (k == 0)
+    {
+        if (get_chunk(u, v - 1).is_block_air(i, j, 15))
+            block_mask |= (0x1 << SUD);
+    }
+    else
+    {
+        if (current_chunk.is_block_air(i, j, k - 1))
+            block_mask |= (0x1 << SUD);
+    }
+
+    /* DESSUS */
+    if (j == 255)
+    {
+        block_mask |= (0x1 << DESSUS);
+    }
+    else
+    {
+        if (current_chunk.is_block_air(i, j + 1, k))
+            block_mask |= (0x1 << DESSUS);
+    }
+
+    /* DESSOUS */
+    if (j == 0)
+    {
+        block_mask |= (0x1 << DESSOUS);
+    }
+    else
+    {
+        if (current_chunk.is_block_air(i, j - 1, k))
+            block_mask |= (0x1 << DESSOUS);
+    }
+
+    return block_mask;
+}
+
 void Terrain::compute_visible_faces(int u, int v)
 {
     // temps moyen : ~ 8500 microsecondes
@@ -107,79 +263,9 @@ void Terrain::compute_visible_faces(int u, int v)
 
                 if(current_block == 0) // Si c'est de l'air, on skip
                     continue;
-                
-                uint8_t block_mask = 0x0;
-                
-                /* OUEST */
-                if(i == 0)
-                {
-                    if(get_chunk(u-1, v).is_block_transparent(15, j, k))
-                        block_mask |= (0x1 << OUEST);
-                }
-                else
-                {
-                    if(current_chunk.is_block_transparent(i-1, j, k))
-                        block_mask |= (0x1 << OUEST);
-                }
 
-                /* NORD */
-                if(k == 15)
-                {
-                    if(get_chunk(u, v+1).is_block_transparent(i, j, 0))
-                        block_mask |= (0x1 << NORD);
-                }
-                else
-                {
-                    if(current_chunk.is_block_transparent(i, j, k+1))
-                        block_mask |= (0x1 << NORD);
-                }
+                uint8_t block_mask = !current_block_data.transparent ? visible_faces_mask(current_chunk, i, j, k) : visible_transparent_faces_mask(current_chunk, i, j, k);
 
-                /* EST */
-                if(i == 15)
-                {
-                    if(get_chunk(u+1, v).is_block_transparent(0, j, k))
-                        block_mask |= (0x1 << EST);
-                }
-                else
-                {
-                    if(current_chunk.is_block_transparent(i+1, j, k))
-                        block_mask |= (0x1 << EST);
-                }
-
-                /* SUD */
-                if(k == 0)
-                {
-                    if(get_chunk(u, v-1).is_block_transparent(i, j, 15))
-                        block_mask |= (0x1 << SUD);
-                }
-                else
-                {
-                    if(current_chunk.is_block_transparent(i, j, k-1))
-                        block_mask |= (0x1 << SUD);
-                }
-
-                /* DESSUS */
-                if(j == 255)
-                {
-                    block_mask |= (0x1 << DESSUS);
-                }
-                else
-                {
-                    if(current_chunk.is_block_transparent(i, j+1, k))
-                        block_mask |= (0x1 << DESSUS);
-                }
-
-                /* DESSOUS */
-                if(j == 0)
-                {
-                    block_mask |= (0x1 << DESSOUS);
-                }
-                else
-                {
-                    if(current_chunk.is_block_transparent(i, j-1, k))
-                        block_mask |= (0x1 << DESSOUS);
-                }
- 
                 FaceOrientation face_o;
                 unsigned tex_face_id;
                 for(int u = 0; u<6; ++u)

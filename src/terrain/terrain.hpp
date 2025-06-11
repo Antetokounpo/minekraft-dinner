@@ -31,6 +31,8 @@ class Terrain
 
     private:
         void compute_visible_faces(int u, int v);
+        uint8_t visible_faces_mask(Chunk& current_chunk, unsigned i, unsigned j, unsigned k);
+        uint8_t visible_transparent_faces_mask(Chunk& current_chunk, unsigned i, unsigned j, unsigned k);
         NoiseGenerator noise_generator;
 
         std::unordered_map<int, std::unordered_map<int, Chunk>> chunks;

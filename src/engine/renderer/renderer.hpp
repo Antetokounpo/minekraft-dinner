@@ -26,6 +26,7 @@ class Renderer
 
         void render_terrain(Terrain& terrain);
         void render_chunk(const Chunk& chunk);
+        void render_transparent_chunk(const Chunk& chunk);
         void render_world(World& world);
         void render_face(Face f, const Chunk& chunk);
         void render_hud();

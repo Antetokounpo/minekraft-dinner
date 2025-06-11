@@ -19,10 +19,12 @@ class Chunk
 
         unsigned get_block(unsigned int x, unsigned int y, unsigned int z) const;
         bool is_block_transparent(unsigned x, unsigned y, unsigned z) const;
+        bool is_block_air(unsigned x, unsigned y, unsigned z) const;
         void set_block(unsigned x, unsigned y, unsigned z, unsigned b);
         void generate(NoiseGenerator& generator);
         
         void build_mesh();
+        void build_transparent_mesh();
 
         void start() const;
         void stop() const;

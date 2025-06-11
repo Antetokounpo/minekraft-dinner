@@ -28,6 +28,11 @@ void Renderer::render_chunk(const Chunk& chunk)
 
     chunk.stop();
     texture.stop();
+}
+
+void Renderer::render_transparent_chunk(const Chunk &chunk)
+{
+    const auto& [u, v] = chunk.get_position();
 
     chunk.start_transparent();
     texture.start();
@@ -37,7 +42,7 @@ void Renderer::render_chunk(const Chunk& chunk)
 
     chunk.stop_transparent();
     texture.stop();
-}
+} 
 
 void Renderer::render()
 {
@@ -65,6 +70,15 @@ void Renderer::render_terrain(Terrain& terrain)
         }
     }
 
+    // L'ordre des chunks doit être du plus loin au plus proche pour que l'effet de transparence soit réaliste
+    std::sort(chunks_to_render.begin(), chunks_to_render.end(), [](const std::tuple<int, int>& a, const std::tuple<int, int>& b)
+    {
+        auto da = pow(std::get<0>(a), 2) + pow(std::get<1>(a), 2);
+        auto db = pow(std::get<0>(b), 2) + pow(std::get<1>(b), 2);
+
+        return da > db;
+    });
+
     bool generated = false;
     bool visible_faces = false;
     for(auto& [u, v] : chunks_to_render)
@@ -79,6 +93,22 @@ void Renderer::render_terrain(Terrain& terrain)
                 std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
                 if(!chunk.is_visible_faces()) visible_faces = true;
                 render_chunk(chunk);
+            }
+        }
+    }
+
+    for(auto& [u, v] : chunks_to_render)
+    {
+       if(!generated || terrain.is_chunk(u, v))
+        {
+            if(!terrain.is_chunk(u, v)) generated = true;
+            Chunk& chunk = terrain.get_chunk(u, v);
+
+            if(!visible_faces || chunk.is_visible_faces()) // 1 seule génération par call
+            {
+                std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
+                if(!chunk.is_visible_faces()) visible_faces = true;
+                render_transparent_chunk(chunk);
             }
         }
     }
