@@ -16,3 +16,17 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp lib/imgui/*.cpp)
 add_executable(Kraftdinner ${SOURCE_FILES})
 
 target_link_libraries(Kraftdinner -lSDL2 -lSDL2_image -lGL -lGLEW)
+
+add_custom_command(
+    TARGET Kraftdinner POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/res
+    ${CMAKE_CURRENT_BINARY_DIR}/res
+)
+
+add_custom_command(
+    TARGET Kraftdinner POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/shaders
+    ${CMAKE_CURRENT_BINARY_DIR}/shaders
+)
