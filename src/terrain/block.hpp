@@ -22,5 +22,6 @@ static Block BLOCK_TYPES[] = {
     {"Stone", 2, 1, 1, 1, 1, 1, 1, false},
     {"Grass", 3, 3, 3, 3, 3, 2, 0, false},
     {"Sand", 4, 4, 4, 4, 4, 4, 0, false},
-    {"Water", 5, 10, 10, 10, 10, 10, 10, true}
+    {"Water", 5, 10, 10, 10, 10, 10, 10, true},
+    {"Glass", 6, 11, 11, 11, 11, 11, 11, true},
 };
