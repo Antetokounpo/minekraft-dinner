@@ -34,3 +34,8 @@ Skybox& World::get_skybox()
 {
     return skybox;
 }
+
+std::vector<Light> &World::get_light_sources()
+{
+    return light_sources;
+}
