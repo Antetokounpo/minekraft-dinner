@@ -7,6 +7,7 @@
 
 #include<terrain/block.hpp>
 #include<terrain/chunk.hpp>
+#include<terrain/faces.hpp>
 
 Renderer::Renderer(SDL_Window* win) : camera(win)
 {
@@ -132,30 +133,7 @@ void Renderer::render_face(Face f, const Chunk& chunk)
     /* Petit offset qui va placer la face "highlit" un peu par-dessus la face qu'on vise réellement pour qu'on voit la texture du bloc
        au travers du highlight. Ce vecteur est additionner à la translation plus tard.
     */
-    glm::vec3 highlight_offset = {0, 0, 0};
-    switch (o)
-    {
-    case SUD:
-        highlight_offset = {0.0, 0.0, -1.0f};
-        break;
-    case EST:
-        highlight_offset = {1.0f, 0.0, 0.0};
-        break;
-    case NORD:
-        highlight_offset = {0.0, 0.0, 1.0f};
-        break;
-    case OUEST:
-        highlight_offset = {-1.0f, 0.0f, 0.0f};
-        break;
-    case DESSUS:
-        highlight_offset = {0.0f, 1.0f, 0.0f};
-        break;
-    case DESSOUS:
-        highlight_offset = {0.0f, -1.0f, 0.0f};
-        break;
-    default:
-        break;
-    }
+    glm::vec3 highlight_offset = faces_directions[o];
     highlight_offset *= 0.01f;
 
     std::vector<float> uvs = {

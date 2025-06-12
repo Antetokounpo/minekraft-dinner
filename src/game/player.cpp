@@ -66,6 +66,8 @@ void Player::check_block_interaction(Terrain& t)
     glm::vec3 ray = get_ray();
     unsigned increment_size = 80;
     float ray_increment = ray_range/increment_size;
+
+    // Figure out which block the player is looking at
     for(unsigned i = 0; i<increment_size; ++i)
     {
         looking_block = ray*(i*ray_increment) + position;
@@ -79,6 +81,7 @@ void Player::check_block_interaction(Terrain& t)
     double delta_y = (ray.y > 0) ? glm::abs(looking_block_rel.y) : (1.0f - glm::abs(looking_block_rel.y));
     double delta_z = (ray.z > 0) ? glm::abs(looking_block_rel.z) : (1.0f - glm::abs(looking_block_rel.z));
 
+    // Figure which face of the block the player is looking at
     FaceOrientation face;
     if(glm::min(delta_x, delta_y) == delta_x && glm::min(delta_x, delta_z) == delta_x)
         face = (ray.x > 0) ? OUEST : EST;
@@ -91,7 +94,13 @@ void Player::check_block_interaction(Terrain& t)
     looking_face = {(unsigned)floor(looking_block.x) % 16, (unsigned)floor(looking_block.y), (unsigned)floor(looking_block.z) % 16, face, 0}; // On se fout du type de block ici
 
     if(block && is_punching)
+    {
         t.set_block(looking_block, 0);
+    }
+    else if(block && is_building && !t.get_block(looking_block + faces_directions[face]))
+    {
+        t.set_block(looking_block + faces_directions[face], 1);
+    }
 }
 
 glm::vec3 Player::get_ray()
