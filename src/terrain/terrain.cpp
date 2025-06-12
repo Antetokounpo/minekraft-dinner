@@ -308,7 +308,7 @@ void Terrain::compute_visible_faces(int u, int v)
     }
 
     current_chunk.set_visible_faces(faces_to_render);
-    current_chunk.set_transparent_faces(transparent_faces_to_render); // pas optimisé, on call build_mesh() deux en faisant ça
+    current_chunk.set_transparent_faces(transparent_faces_to_render);
 
     /*
     auto stop = std::chrono::high_resolution_clock::now();

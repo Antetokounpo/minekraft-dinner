@@ -22,7 +22,6 @@ class Renderer
         ~Renderer();
 
         void update();
-        void render();
 
         void render_terrain(Terrain& terrain);
         void render_chunk(const Chunk& chunk);
@@ -32,7 +31,6 @@ class Renderer
         void render_hud();
         void render_skybox(Skybox& skybox);
 
-        void load_model(const std::string& filename);
         void load_shader(const std::string& vertex_filename, const std::string& fragment_filename);
         void load_skybox_shader(const std::string& vertex_filename, const std::string& fragment_filename);
         void load_texture(const std::string& filename);
@@ -44,7 +42,6 @@ class Renderer
         Camera camera;
         int render_distance;
 
-        Model model;
         Texture texture;
         Shader shader;
         Shader skybox_shader;

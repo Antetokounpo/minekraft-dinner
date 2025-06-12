@@ -5,7 +5,6 @@
 #include<tuple>
 #include<glm/gtc/matrix_transform.hpp>
 
-#include<engine/loaders/objloader.hpp>
 #include<terrain/block.hpp>
 #include<terrain/chunk.hpp>
 
@@ -41,18 +40,6 @@ void Renderer::render_transparent_chunk(const Chunk &chunk)
     glDrawElements(GL_TRIANGLES, chunk.get_transparent_vertex_count(), GL_UNSIGNED_INT, 0);
 
     chunk.stop_transparent();
-    texture.stop();
-} 
-
-void Renderer::render()
-{
-    model.start();
-    texture.start();
-    
-    shader.set_uniform_variable(glm::translate(glm::mat4(1.0f), {0, 0, 0}),  "model");
-    glDrawElements(GL_TRIANGLES, model.get_vertex_count(), GL_UNSIGNED_INT, 0);
-
-    model.stop();
     texture.stop();
 }
 
@@ -282,17 +269,6 @@ void Renderer::update()
 {
     shader.set_uniform_variable(camera.get_view_matrix(), "view");
     shader.set_uniform_variable(camera.get_projection_matrix(), "projection");
-}
-
-void Renderer::load_model(const std::string& filename)
-{
-    std::vector<float> vertices;
-    std::vector<float> uvs;
-    std::vector<float> normals;
-    std::vector<unsigned int> indices;
-
-    OBJLoader::load_file(filename, vertices, uvs, normals, indices);
-    model.load(&vertices[0], vertices.size()*sizeof(vertices[0]), &uvs[0], uvs.size()*sizeof(uvs[0]), &normals[0], normals.size()*sizeof(normals[0]), &indices[0], indices.size()*sizeof(indices[0]));
 }
 
 void Renderer::load_texture(const std::string& filename)

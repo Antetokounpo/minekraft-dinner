@@ -254,7 +254,7 @@ void Chunk::set_visible_faces(const std::vector<Face>& visible_f)
 void Chunk::set_transparent_faces(const std::vector<Face>& transparent_f)
 {
     transparent_faces = transparent_f;
-    build_transparent_mesh(); // pas optimisé
+    build_transparent_mesh();
 }
 
 std::vector<Face> Chunk::get_visible_faces() const
