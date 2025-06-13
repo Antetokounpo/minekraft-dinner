@@ -20,6 +20,7 @@ class Player : public Camera
         Face get_looking_face() const;
         glm::vec3 get_looking_block() const;
         void set_building_block(unsigned block_id);
+        unsigned get_building_block() const;
 
         const glm::vec3& get_player_position() const;
 

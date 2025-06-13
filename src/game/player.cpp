@@ -134,6 +134,11 @@ void Player::set_building_block(unsigned block_id)
     building_block = block_id;
 }
 
+unsigned Player::get_building_block() const
+{
+    return building_block;
+}
+
 const glm::vec3& Player::get_player_position() const
 {
     return player_position;
