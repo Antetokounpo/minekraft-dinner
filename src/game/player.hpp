@@ -15,10 +15,11 @@ class Player : public Camera
         void update_position(Terrain& t, float delta);
 
         void check_block_interaction(Terrain& t);
-        glm::vec3 get_ray();
+        glm::vec3 get_ray() const;
         bool is_looking_at_face() const;
         Face get_looking_face() const;
         glm::vec3 get_looking_block() const;
+        void set_building_block(unsigned block_id);
 
         const glm::vec3& get_player_position() const;
 
@@ -34,4 +35,5 @@ class Player : public Camera
         Face looking_face;
         glm::vec3 looking_block;
         float ray_range;
+        unsigned building_block;
 };

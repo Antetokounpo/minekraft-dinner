@@ -15,6 +15,7 @@ Player::Player(SDL_Window* win) : Camera(win)
     is_looking_face = false;
     looking_face = {0, 0, 0, SUD, 0};
     ray_range = 2.0f;
+    building_block = 1;
 }
 
 Player::~Player(){}
@@ -57,7 +58,7 @@ void Player::update(Terrain& t)
 
     reset_mouse();
     is_punching = mouse_state & SDL_BUTTON_LMASK; // On continue de puncher ssi le bouton est toujours enfoncé
-    is_building = mouse_state & SDL_BUTTON_RMASK;
+    is_building = false; // Si on fait comme en haut, ça va trop vite (Un bloc par clic)
 }
 
 void Player::check_block_interaction(Terrain& t)
@@ -99,11 +100,11 @@ void Player::check_block_interaction(Terrain& t)
     }
     else if(block && is_building && !t.get_block(looking_block + faces_directions[face]))
     {
-        t.set_block(looking_block + faces_directions[face], 1);
+        t.set_block(looking_block + faces_directions[face], building_block);
     }
 }
 
-glm::vec3 Player::get_ray()
+glm::vec3 Player::get_ray() const
 {
     glm::vec4 ray_clip = {0.0f, 0.0f, -1.0f, 1.0f};
     glm::vec4 ray_eye = glm::inverse(get_projection_matrix()) * ray_clip;
@@ -126,6 +127,11 @@ Face Player::get_looking_face() const
 glm::vec3 Player::get_looking_block() const
 {
     return looking_block;
+}
+
+void Player::set_building_block(unsigned block_id)
+{
+    building_block = block_id;
 }
 
 const glm::vec3& Player::get_player_position() const
