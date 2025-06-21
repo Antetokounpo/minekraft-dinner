@@ -25,3 +25,5 @@ static Block BLOCK_TYPES[] = {
     {"Water", 5, 10, 10, 10, 10, 10, 10, true},
     {"Glass", 6, 11, 11, 11, 11, 11, 11, true},
 };
+
+constexpr static int N_BLOCK = sizeof(BLOCK_TYPES) / sizeof(Block);
