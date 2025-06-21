@@ -6,7 +6,7 @@
 #include<GL/glew.h>
 
 #include <imgui/imgui.h>
-#include <imgui/imgui_impl_sdl.h>
+#include <imgui/imgui_impl_sdl2.h>
 #include <imgui/imgui_impl_opengl3.h>
 
 #include "engine/model.hpp"
@@ -105,13 +105,24 @@ int main()
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
+        // Set the debug window size and position
+        ImGui::SetNextWindowPos({10, 10});
+        ImGui::SetNextWindowSize({140, 150});
+
         world.update();
         renderer.render_world(world);
 
-        ImGui::Begin("Coords");
+        ImGui::Begin("Info");
+
+        ImGui::SeparatorText("Coords");
         ImGui::TextColored(ImVec4(0, 0.5, 1, 1), ("X : " + std::to_string(world.get_player().get_position().x)).c_str());
         ImGui::TextColored(ImVec4(0, 1, 0, 1), ("Y : " + std::to_string(world.get_player().get_position().y)).c_str());
         ImGui::TextColored(ImVec4(1, 0, 0, 1), ("Z : " + std::to_string(world.get_player().get_position().z)).c_str());
+
+        ImGui::SeparatorText("Block in hand");
+
+        ImGui::Text(BLOCK_TYPES[world.get_player().get_building_block()].name.c_str());
+
         ImGui::End();
 
         ImGui::Render();
