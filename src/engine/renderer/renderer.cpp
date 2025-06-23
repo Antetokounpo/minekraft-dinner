@@ -44,7 +44,7 @@ void Renderer::render_transparent_chunk(const Chunk &chunk)
     texture.stop();
 }
 
-void Renderer::render_terrain(Terrain& terrain)
+void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
 {
     int r = floor(camera.get_position()[0]/16);
     int s = floor(camera.get_position()[2]/16);
@@ -67,6 +67,7 @@ void Renderer::render_terrain(Terrain& terrain)
         return da > db;
     });
 
+    /* Render solid objects */
     bool generated = false;
     bool visible_faces = false;
     for(auto& [u, v] : chunks_to_render)
@@ -85,6 +86,14 @@ void Renderer::render_terrain(Terrain& terrain)
         }
     }
 
+    // Switch shader to render skybox and switch back afterwards
+    shader.stop();
+    skybox_shader.start();
+    render_skybox(skybox);
+    skybox_shader.stop();
+    shader.start();
+
+    /* Render transparent objects */
     for(auto& [u, v] : chunks_to_render)
     {
        if(!generated || terrain.is_chunk(u, v))
@@ -109,17 +118,10 @@ void Renderer::render_world(World& world)
 
     update();
 
-    render_terrain(world.get_terrain());
+    render_terrain(world.get_terrain(), world.get_skybox());
     if(world.get_player().is_looking_at_face())
         render_face(world.get_player().get_looking_face(), world.get_terrain().get_chunk_of_block(world.get_player().get_looking_block()));
-    
-    shader.stop();
 
-    skybox_shader.start();
-    render_skybox(world.get_skybox());
-    skybox_shader.stop();
-
-    shader.start();
     render_hud();
     shader.stop();
 }

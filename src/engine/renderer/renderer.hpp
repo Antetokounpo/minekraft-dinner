@@ -23,7 +23,7 @@ class Renderer
 
         void update();
 
-        void render_terrain(Terrain& terrain);
+        void render_terrain(Terrain& terrain, Skybox& skybox);
         void render_chunk(const Chunk& chunk);
         void render_transparent_chunk(const Chunk& chunk);
         void render_world(World& world);
