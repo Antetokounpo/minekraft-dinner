@@ -262,9 +262,19 @@ std::vector<Face> Chunk::get_visible_faces() const
     return visible_faces;
 }
 
+bool Chunk::is_visible_solid_faces() const
+{
+    return !visible_faces.empty();
+}
+
+bool Chunk::is_visible_transparent_faces() const
+{
+    return !transparent_faces.empty();
+}
+
 bool Chunk::is_visible_faces() const
 {
-    return !(visible_faces.empty() && transparent_faces.empty());
+    return is_visible_solid_faces() || is_visible_transparent_faces();
 }
 
 void Chunk::reset_visible_faces()

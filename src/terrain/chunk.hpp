@@ -38,6 +38,8 @@ class Chunk
         void set_visible_faces(const std::vector<Face>& visible_f);
         void set_transparent_faces(const std::vector<Face>& transparent_f);
         bool is_visible_faces() const;
+        bool is_visible_solid_faces() const;
+        bool is_visible_transparent_faces() const;
         void reset_visible_faces();
 
     private:

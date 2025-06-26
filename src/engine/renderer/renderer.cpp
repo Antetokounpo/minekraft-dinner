@@ -79,9 +79,9 @@ void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
 
             if(!visible_faces || chunk.is_visible_faces()) // 1 seule génération par call
             {
+                //if(!chunk.is_visible_faces()) visible_faces = true;
                 std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
-                if(!chunk.is_visible_faces()) visible_faces = true;
-                render_chunk(chunk);
+                if(chunk.is_visible_solid_faces()) render_chunk(chunk);
             }
         }
     }
@@ -103,9 +103,9 @@ void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
 
             if(!visible_faces || chunk.is_visible_faces()) // 1 seule génération par call
             {
+                //if(!chunk.is_visible_faces()) visible_faces = true;
                 std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
-                if(!chunk.is_visible_faces()) visible_faces = true;
-                render_transparent_chunk(chunk);
+                if(chunk.is_visible_transparent_faces()) render_transparent_chunk(chunk);
             }
         }
     }
