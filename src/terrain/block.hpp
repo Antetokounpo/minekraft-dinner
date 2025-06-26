@@ -21,9 +21,10 @@ static Block BLOCK_TYPES[] = {
     {"Dirt", 1, 0, 0, 0, 0, 0, 0, false},
     {"Stone", 2, 1, 1, 1, 1, 1, 1, false},
     {"Grass", 3, 3, 3, 3, 3, 2, 0, false},
-    {"Sand", 4, 4, 4, 4, 4, 4, 0, false},
+    {"Sand", 4, 4, 4, 4, 4, 4, 4, false},
     {"Water", 5, 10, 10, 10, 10, 10, 10, true},
     {"Glass", 6, 11, 11, 11, 11, 11, 11, true},
+    {"Wood planks", 7, 5, 5, 5, 5, 5, 5, false},
 };
 
 constexpr static int N_BLOCK = sizeof(BLOCK_TYPES) / sizeof(Block);
