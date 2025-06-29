@@ -14,8 +14,4 @@ class NoiseGenerator : public Perlin
     private:
         std::vector<double> amplitudes;
         std::vector<double> frequencies;
-
-        double frequency;
-        double amplitude;
-
 };

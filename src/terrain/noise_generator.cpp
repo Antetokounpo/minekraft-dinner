@@ -1,12 +1,9 @@
 #include "noise_generator.hpp"
 
 #include<numeric>
+#include<cmath>
 
-NoiseGenerator::NoiseGenerator()
-{
-    frequency = 1.0f;
-    amplitude = 1.0f;
-}
+NoiseGenerator::NoiseGenerator() {}
 
 NoiseGenerator::~NoiseGenerator() {}
 
@@ -23,6 +20,11 @@ double NoiseGenerator::noise(double x, double y, double z)
     {
         e += amplitudes[i] * perlin(frequencies[i]*x, frequencies[i]*y, frequencies[i]*z);
     }
+
+    // Normalize output noise (between 0 and 1)
+    e /= std::reduce(amplitudes.begin(), amplitudes.end()); // Sum of vector
+
+    //e = round(e * 100) / 100;
 
     return e;
 }

@@ -60,23 +60,25 @@ void Chunk::generate(NoiseGenerator& generator)
         for(int k = 0; k<16; ++k)
         {
             double h = generator.noise((double)x+((double)i/16), (double)z+((double)k/16));
-            //h = round(h * 4) / 4;
+            h *= 120.0; // Scale
+
             for(int j = 0; j<256; ++j)
             {
-                if(j < h)
+                if(j <= h)
                 {
                     if(j <= 50 && j >= 45)
-                        blocks[i][j][k] = 4;
-                    else if(j < 45.0f)
-                        blocks[i][j][k] = 2;
-                    else if(j == (int)h && h > 12.0f)
-                        blocks[i][j][k] = 3;
+                        blocks[i][j][k] = 4; // Sand
+                    else if(j < 45)
+                        blocks[i][j][k] = 2; // Stone
+                    else if(j == (int)h && h > 12.0)
+                        blocks[i][j][k] = 3; // Grass
                     else
-                        blocks[i][j][k] = 1;
+                        blocks[i][j][k] = 1; // Dirt
                 }
-                
+
+                // Remplir d'eau
                 if(j <= 50 && blocks[i][j][k] == 0)
-                    blocks[i][j][k] = 5;
+                    blocks[i][j][k] = 5; // Water
 
                 /* On garde dans une array séparée, la transparence pour chaque block du chunk */
                 if(!BLOCK_TYPES[blocks[i][j][k]].transparent)

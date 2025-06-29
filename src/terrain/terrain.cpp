@@ -9,16 +9,19 @@
 #include<chrono> // profile
 #include<iostream>
 
-Terrain::Terrain(){}
+Terrain::Terrain()
+{
+    // Setup noise generator configuration
+    noise_generator.add_octave(25, 1);
+    noise_generator.add_octave(10, 5);
+    noise_generator.add_octave(100, 0.1f);
+}
 
 Terrain::~Terrain(){}
 
 void Terrain::set_seed(unsigned int seed)
 {
     noise_generator.set_seed(seed);
-    noise_generator.add_octave(25, 1);
-    noise_generator.add_octave(10, 5);
-    noise_generator.add_octave(100, 0.1f);
 }
 
 Chunk& Terrain::get_chunk(int x, int y)
@@ -259,7 +262,7 @@ void Terrain::compute_visible_faces(int u, int v)
             for(unsigned k = 0; k<16; ++k)
             {
                 auto current_block = current_chunk.get_block(i, j, k);
-                auto current_block_data = BLOCK_TYPES[current_block];
+                Block current_block_data = BLOCK_TYPES[current_block];
 
                 if(current_block == 0) // Si c'est de l'air, on skip
                     continue;
