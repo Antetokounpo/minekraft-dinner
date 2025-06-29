@@ -12,16 +12,19 @@
 Terrain::Terrain()
 {
     // Setup noise generator configuration
-    noise_generator.add_octave(25, 1);
-    noise_generator.add_octave(10, 5);
-    noise_generator.add_octave(100, 0.1f);
+    terrain_noise_generator.add_octave(25, 1);
+    terrain_noise_generator.add_octave(10, 5);
+    terrain_noise_generator.add_octave(100, 0.1f);
+
+    trees_noise_generator.add_octave(1, 50);
 }
 
 Terrain::~Terrain(){}
 
 void Terrain::set_seed(unsigned int seed)
 {
-    noise_generator.set_seed(seed);
+    terrain_noise_generator.set_seed(seed);
+    trees_noise_generator.set_seed(seed);
 }
 
 Chunk& Terrain::get_chunk(int x, int y)
@@ -80,7 +83,7 @@ bool Terrain::is_chunk(int x, int y)
 void Terrain::generate(int x, int y)
 {
     chunks[x][y].set_position(x, y);
-    chunks[x][y].generate(noise_generator);
+    chunks[x][y].generate(terrain_noise_generator, trees_noise_generator);
 }
 
 std::vector<Face> Terrain::get_visible_faces(int u, int v)
