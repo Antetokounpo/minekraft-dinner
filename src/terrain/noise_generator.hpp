@@ -10,7 +10,7 @@ class NoiseGenerator : public Perlin
 
         void add_octave(double a, double f);
 
-        double noise(double x, double y, double z=0.0f);
+        double noise(double x, double y, double z=0.0f) const;
     private:
         std::vector<double> amplitudes;
         std::vector<double> frequencies;

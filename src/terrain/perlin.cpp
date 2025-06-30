@@ -23,17 +23,17 @@ void Perlin::set_seed(unsigned int seed)
         p.emplace_back(permutation[i % 256]);
 }
 
-double Perlin::fade(double t)
+double Perlin::fade(double t) const
 {
     return 6*std::pow(t, 5) - 15*std::pow(t, 4) + 10*std::pow(t, 3);
 }
 
-double Perlin::lerp(double x, double a, double b)
+double Perlin::lerp(double x, double a, double b) const
 {
     return x*(b - a) + a;
 }
 
-double Perlin::grad(int hash, double x, double y, double z)
+double Perlin::grad(int hash, double x, double y, double z) const
 {
     int h = hash & 15;                      
     double u = h<8 ? x : y;
@@ -42,7 +42,7 @@ double Perlin::grad(int hash, double x, double y, double z)
     return ((h&1) == 0 ? u : -u) + ((h&2) == 0 ? v : -v);
 }
 
-double Perlin::perlin_noise(double x, double y, double z)
+double Perlin::perlin_noise(double x, double y, double z) const
 {
     int xi = (int)floor(x) & 255;
     int yi = (int)floor(y) & 255;
@@ -74,7 +74,7 @@ double Perlin::perlin_noise(double x, double y, double z)
                                    grad(p[bb+1], xf-1, yf-1, zf-1 ))));
 }
 
-double Perlin::perlin(double x, double y, double z)
+double Perlin::perlin(double x, double y, double z) const
 {
     double n = perlin_noise(x, y, z);
 

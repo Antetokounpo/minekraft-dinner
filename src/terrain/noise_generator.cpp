@@ -13,7 +13,7 @@ void NoiseGenerator::add_octave(double a, double f)
     frequencies.push_back(f);
 }
 
-double NoiseGenerator::noise(double x, double y, double z)
+double NoiseGenerator::noise(double x, double y, double z) const
 {
     double e = 0.0f;
     for(unsigned i = 0; i<amplitudes.size(); ++i)

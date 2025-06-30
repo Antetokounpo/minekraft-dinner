@@ -11,12 +11,12 @@ class Perlin
         ~Perlin();
 
         void set_seed(unsigned int seed);
-        double perlin(double x, double y, double z=0.0f); // 3D
+        double perlin(double x, double y, double z=0.0f) const; // 3D
     private:
-        double fade(double t);
-        double lerp(double x, double a, double b);
-        double grad(int hash, double x, double y, double z);
-        double perlin_noise(double x, double y, double z);
+        double fade(double t) const;
+        double lerp(double x, double a, double b) const;
+        double grad(int hash, double x, double y, double z) const;
+        double perlin_noise(double x, double y, double z) const;
 
         std::vector<unsigned> p;
 };
