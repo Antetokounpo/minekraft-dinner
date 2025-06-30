@@ -265,7 +265,7 @@ void Terrain::compute_visible_faces(int u, int v)
             for(unsigned k = 0; k<16; ++k)
             {
                 auto current_block = current_chunk.get_block(i, j, k);
-                Block current_block_data = BLOCK_TYPES[current_block];
+                const Block& current_block_data = BLOCK_TYPES[current_block];
 
                 if(current_block == 0) // Si c'est de l'air, on skip
                     continue;

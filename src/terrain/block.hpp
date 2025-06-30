@@ -16,7 +16,7 @@ typedef struct Block
 } Block;
 
 
-static Block BLOCK_TYPES[] = {
+const Block BLOCK_TYPES[] = {
     {"Air", 0, 0, 0, 0, 0, 0, 0, true}, // On se crisse du reste
     {"Dirt", 1, 0, 0, 0, 0, 0, 0, false},
     {"Stone", 2, 1, 1, 1, 1, 1, 1, false},
@@ -29,4 +29,4 @@ static Block BLOCK_TYPES[] = {
     {"Leaves", 9, 12, 12, 12, 12, 12, 12, true},
 };
 
-constexpr static int N_BLOCK = sizeof(BLOCK_TYPES) / sizeof(Block);
+constexpr const int N_BLOCK = sizeof(BLOCK_TYPES) / sizeof(Block);
