@@ -49,12 +49,17 @@ void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
     int r = floor(camera.get_position()[0]/16);
     int s = floor(camera.get_position()[2]/16);
     std::vector<std::tuple<int, int>> chunks_to_render;
+    std::vector<std::tuple<int, int>> chunks_to_generate;
+
 
     for(int i = -render_distance; i<render_distance+1; ++i)
     {
         for(int j = -render_distance; j<render_distance+1; ++j)
         {
-            chunks_to_render.push_back({r+i, s+j});
+            if(terrain.is_chunk(r+i, s+j))
+                chunks_to_render.push_back({r+i, s+j}); // If generated, render
+            else
+                terrain.push_chunk_to_generate(r+i, s+j); // If not generated, push it onto the queue
         }
     }
 
@@ -67,23 +72,15 @@ void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
         return da > db;
     });
 
+    terrain.pop_and_generate_chunk(); // Generate one chunk per render
+
     /* Render solid objects */
-    bool generated = false;
-    bool visible_faces = false;
     for(auto& [u, v] : chunks_to_render)
     {
-       if(!generated || terrain.is_chunk(u, v))
-        {
-            if(!terrain.is_chunk(u, v)) generated = true;
-            Chunk& chunk = terrain.get_chunk(u, v);
+        Chunk& chunk = terrain.get_chunk(u, v);
 
-            if(!visible_faces || chunk.is_visible_faces()) // 1 seule génération par call
-            {
-                //if(!chunk.is_visible_faces()) visible_faces = true;
-                std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
-                if(chunk.is_visible_solid_faces()) render_chunk(chunk);
-            }
-        }
+        std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
+        if(chunk.is_visible_solid_faces()) render_chunk(chunk); // Only render if there is something to render
     }
 
     // Switch shader to render skybox and switch back afterwards
@@ -96,18 +93,10 @@ void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
     /* Render transparent objects */
     for(auto& [u, v] : chunks_to_render)
     {
-       if(!generated || terrain.is_chunk(u, v))
-        {
-            if(!terrain.is_chunk(u, v)) generated = true;
             Chunk& chunk = terrain.get_chunk(u, v);
 
-            if(!visible_faces || chunk.is_visible_faces()) // 1 seule génération par call
-            {
-                //if(!chunk.is_visible_faces()) visible_faces = true;
-                std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
-                if(chunk.is_visible_transparent_faces()) render_transparent_chunk(chunk);
-            }
-        }
+            std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
+            if(chunk.is_visible_transparent_faces()) render_transparent_chunk(chunk);
     }
 }
 

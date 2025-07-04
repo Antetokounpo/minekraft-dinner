@@ -3,6 +3,8 @@
 #include<vector>
 #include<unordered_map>
 #include<memory>
+#include<queue>
+#include<set>
 
 #include<glm/vec3.hpp>
 
@@ -27,6 +29,8 @@ class Terrain
 
         bool is_chunk(int x , int y);
         void generate(int x, int y);
+        void push_chunk_to_generate(int u, int v);
+        void pop_and_generate_chunk();
         std::vector<Face> get_visible_faces(int u, int v);
 
     private:
@@ -37,4 +41,6 @@ class Terrain
         NoiseGenerator trees_noise_generator;
 
         std::unordered_map<int, std::unordered_map<int, Chunk>> chunks;
+        std::queue<std::tuple<int, int>> chunks_to_generate;
+        std::set<std::tuple<int, int>> chunks_to_generate_set;
 };

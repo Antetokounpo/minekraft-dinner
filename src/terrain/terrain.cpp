@@ -2,6 +2,7 @@
 
 #include<algorithm>
 #include<cmath>
+#include<functional>
 
 #include "chunk.hpp"
 #include "block.hpp"
@@ -92,6 +93,28 @@ std::vector<Face> Terrain::get_visible_faces(int u, int v)
     if(!chunk.is_visible_faces())
         compute_visible_faces(u, v);
     return chunk.get_visible_faces();
+}
+
+void Terrain::push_chunk_to_generate(int u, int v)
+{
+    // Chunk already exists
+    if(is_chunk(u, v) || chunks_to_generate_set.contains({u, v}))
+        return;
+    
+    chunks_to_generate.push({u, v});
+    chunks_to_generate_set.insert({u, v});
+}
+
+void Terrain::pop_and_generate_chunk()
+{
+    if(chunks_to_generate.empty())
+        return; // Nothing to do actually
+
+    // Calls `generate` method with arguments from the top of the queue
+    std::apply(std::bind_front(&Terrain::generate, this), chunks_to_generate.front());
+
+    chunks_to_generate_set.erase(chunks_to_generate.front());
+    chunks_to_generate.pop();
 }
 
 uint8_t Terrain::visible_faces_mask(Chunk& current_chunk, unsigned i, unsigned j, unsigned k)
