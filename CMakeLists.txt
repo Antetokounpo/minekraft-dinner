@@ -15,7 +15,9 @@ file(GLOB_RECURSE SOURCE_FILES src/*.cpp lib/imgui/*.cpp)
 
 add_executable(Kraftdinner ${SOURCE_FILES})
 
-target_link_libraries(Kraftdinner -lSDL2 -lSDL2_image -lGL -lGLEW)
+find_package(Threads REQUIRED)
+
+target_link_libraries(Kraftdinner -lSDL2 -lSDL2_image -lGL -lGLEW Threads::Threads)
 
 add_custom_command(
     TARGET Kraftdinner POST_BUILD
