@@ -76,12 +76,6 @@ bool Terrain::is_chunk(int x, int y)
     return chunks[x][y].is_generated();
 }
 
-void Terrain::generate(int x, int y)
-{
-    chunks[x][y].set_position(x, y);
-    chunks[x][y].generate(terrain_noise_generator, trees_noise_generator);
-}
-
 std::vector<Face> Terrain::get_visible_faces(int u, int v)
 {
     const Chunk& chunk = get_chunk(u, v);
@@ -98,21 +92,9 @@ void Terrain::push_chunk_to_generate(int u, int v)
     terrain_generator.push_chunk_to_generate(u, v);
 }
 
-void Terrain::pop_and_generate_chunk()
-{
-    if(chunks_to_generate.empty())
-        return; // Nothing to do actually
-
-    // Calls `generate` method with arguments from the top of the queue
-    std::apply(std::bind_front(&Terrain::generate, this), chunks_to_generate.front());
-
-    chunks_to_generate_set.erase(chunks_to_generate.front());
-    chunks_to_generate.pop();
-}
-
 void Terrain::copy_generated_chunks(unsigned n)
 {
-    for(int i = 0; i<n; ++i)
+    for(unsigned i = 0; i<n; ++i)
     {
         auto c = terrain_generator.pop_generated_chunk();
 

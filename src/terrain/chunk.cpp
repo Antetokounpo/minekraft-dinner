@@ -13,13 +13,7 @@ Chunk::Chunk()
 {
     visible_faces = {};
     transparent_faces = {};
-
-    /* Init les arrays à 0 */
-    //for(unsigned i = 0; i<16; ++i) for(unsigned j = 0; j<256; ++j) for(unsigned k = 0; k<16; ++k) blocks[i][j][k] = 0;
-    for(unsigned i = 0; i<16; ++i) for(unsigned j = 0; j<256; ++j) for(unsigned k = 0; k<16; ++k) transparent_blocks[i][j][k] = true;
 }
-
-Chunk::~Chunk(){}
 
 void Chunk::set_position(int i, int k)
 {
@@ -54,13 +48,7 @@ bool Chunk::is_block_air(unsigned x, unsigned y, unsigned z) const
 void Chunk::set_block(unsigned x, unsigned y, unsigned z, unsigned b)
 {
     chunk_data.set_block(x, y, z, b);
-    transparent_blocks[x][y][z] = BLOCK_TYPES[b].transparent;
     reset_visible_faces();
-}
-
-void Chunk::generate(const NoiseGenerator& terrain_noise_generator, const NoiseGenerator& trees_noise_generator)
-{
-    chunk_data.generate(terrain_noise_generator, trees_noise_generator);
 }
 
 bool Chunk::is_generated() const

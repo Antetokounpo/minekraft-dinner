@@ -14,9 +14,6 @@ class Chunk
 {
     public:
         Chunk(); // Constructor
-        ~Chunk(); // Destructor
-        //Chunk(const Chunk& c); // Copy constructor
-        //Chunk& operator=(const Chunk& c); // Copy assignement
 
         void set_position(int i, int k);
         std::tuple<int, int> get_position() const;
@@ -28,7 +25,6 @@ class Chunk
         bool is_block_transparent(unsigned x, unsigned y, unsigned z) const;
         bool is_block_air(unsigned x, unsigned y, unsigned z) const;
         void set_block(unsigned x, unsigned y, unsigned z, unsigned b);
-        void generate(const NoiseGenerator& terrain_noise_generator, const NoiseGenerator& trees_noise_generator);
         
         void build_mesh();
         void build_transparent_mesh();
@@ -50,11 +46,7 @@ class Chunk
         void reset_visible_faces();
 
     private:
-        //int x;
-        //int z;
-        //unsigned blocks[16][256][16];
         ChunkData chunk_data;
-        bool transparent_blocks[16][256][16]; // TODO: is it useless?
         std::vector<Face> visible_faces;
         std::vector<Face> transparent_faces;
         Model chunk_mesh;

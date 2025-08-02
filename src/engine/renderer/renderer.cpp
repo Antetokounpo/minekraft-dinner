@@ -14,8 +14,6 @@ Renderer::Renderer(SDL_Window* win) : camera(win)
     render_distance = 12;
 }
 
-Renderer::~Renderer(){}
-
 void Renderer::render_chunk(const Chunk& chunk)
 {
     const auto& [u, v] = chunk.get_position();

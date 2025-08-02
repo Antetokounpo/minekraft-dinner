@@ -19,7 +19,6 @@ class Renderer
 {
     public:
         Renderer(SDL_Window* win);
-        ~Renderer();
 
         void update();
 
