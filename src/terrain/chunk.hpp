@@ -7,21 +7,28 @@
 #include "noise_generator.hpp"
 #include "faces.hpp"
 #include "block.hpp"
+#include "chunk_data.hpp"
 
+// TODO: hériter de ChunkData
 class Chunk
 {
     public:
-        Chunk();
-        ~Chunk();
+        Chunk(); // Constructor
+        ~Chunk(); // Destructor
+        //Chunk(const Chunk& c); // Copy constructor
+        //Chunk& operator=(const Chunk& c); // Copy assignement
 
         void set_position(int i, int k);
         std::tuple<int, int> get_position() const;
+
+        void set_chunk_data(ChunkData new_chunk_data);
+        bool is_generated() const;
 
         unsigned get_block(unsigned int x, unsigned int y, unsigned int z) const;
         bool is_block_transparent(unsigned x, unsigned y, unsigned z) const;
         bool is_block_air(unsigned x, unsigned y, unsigned z) const;
         void set_block(unsigned x, unsigned y, unsigned z, unsigned b);
-        void generate(NoiseGenerator& terrain_noise_generator, NoiseGenerator& trees_noise_generator);
+        void generate(const NoiseGenerator& terrain_noise_generator, const NoiseGenerator& trees_noise_generator);
         
         void build_mesh();
         void build_transparent_mesh();
@@ -43,9 +50,10 @@ class Chunk
         void reset_visible_faces();
 
     private:
-        int x;
-        int z;
-        unsigned blocks[16][256][16];
+        //int x;
+        //int z;
+        //unsigned blocks[16][256][16];
+        ChunkData chunk_data;
         bool transparent_blocks[16][256][16]; // TODO: is it useless?
         std::vector<Face> visible_faces;
         std::vector<Face> transparent_faces;

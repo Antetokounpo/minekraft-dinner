@@ -10,6 +10,7 @@
 
 #include "chunk.hpp"
 #include "noise_generator.hpp"
+#include "terrain_generator.hpp"
 
 class Terrain
 {
@@ -31,6 +32,8 @@ class Terrain
         void generate(int x, int y);
         void push_chunk_to_generate(int u, int v);
         void pop_and_generate_chunk();
+        void copy_generated_chunks(unsigned n);
+
         std::vector<Face> get_visible_faces(int u, int v);
 
     private:
@@ -39,6 +42,7 @@ class Terrain
         uint8_t visible_transparent_faces_mask(Chunk& current_chunk, unsigned i, unsigned j, unsigned k);
         NoiseGenerator terrain_noise_generator;
         NoiseGenerator trees_noise_generator;
+        TerrainGenerator terrain_generator;
 
         std::unordered_map<int, std::unordered_map<int, Chunk>> chunks;
         std::queue<std::tuple<int, int>> chunks_to_generate;

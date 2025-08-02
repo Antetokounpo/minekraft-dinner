@@ -12,26 +12,21 @@
 
 Terrain::Terrain()
 {
-    // Setup noise generator configuration
-    terrain_noise_generator.add_octave(25, 1);
-    terrain_noise_generator.add_octave(10, 5);
-    terrain_noise_generator.add_octave(100, 0.1f);
-
-    trees_noise_generator.add_octave(1, 50);
+    terrain_generator.start_thread();
 }
 
-Terrain::~Terrain(){}
+Terrain::~Terrain()
+{
+    terrain_generator.stop_thread();
+}
 
 void Terrain::set_seed(unsigned int seed)
 {
-    terrain_noise_generator.set_seed(seed);
-    trees_noise_generator.set_seed(seed);
+    terrain_generator.set_seed(seed);
 }
 
 Chunk& Terrain::get_chunk(int x, int y)
 {
-    if(!is_chunk(x, y))
-        generate(x, y);
     return chunks[x][y];
 }
 
@@ -78,7 +73,7 @@ void Terrain::set_block(glm::vec3 v, unsigned b)
 
 bool Terrain::is_chunk(int x, int y)
 {
-    return chunks[x].count(y);
+    return chunks[x][y].is_generated();
 }
 
 void Terrain::generate(int x, int y)
@@ -98,11 +93,9 @@ std::vector<Face> Terrain::get_visible_faces(int u, int v)
 void Terrain::push_chunk_to_generate(int u, int v)
 {
     // Chunk already exists
-    if(is_chunk(u, v) || chunks_to_generate_set.contains({u, v}))
-        return;
+    if(is_chunk(u, v)) return;
     
-    chunks_to_generate.push({u, v});
-    chunks_to_generate_set.insert({u, v});
+    terrain_generator.push_chunk_to_generate(u, v);
 }
 
 void Terrain::pop_and_generate_chunk()
@@ -115,6 +108,27 @@ void Terrain::pop_and_generate_chunk()
 
     chunks_to_generate_set.erase(chunks_to_generate.front());
     chunks_to_generate.pop();
+}
+
+void Terrain::copy_generated_chunks(unsigned n)
+{
+    for(int i = 0; i<n; ++i)
+    {
+        auto c = terrain_generator.pop_generated_chunk();
+
+        if(c)
+        {
+            auto [u, v] = c.value().get_position();
+            chunks[u][v].set_chunk_data(c.value());
+
+            // Update les chunks contigus
+            for(int i = -1; i<=1; ++i)
+            {
+                get_chunk(u+i, v).reset_visible_faces();
+                get_chunk(u, v+i).reset_visible_faces();
+            }
+        }
+    }
 }
 
 uint8_t Terrain::visible_faces_mask(Chunk& current_chunk, unsigned i, unsigned j, unsigned k)

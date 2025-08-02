@@ -72,7 +72,7 @@ void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
         return da > db;
     });
 
-    terrain.pop_and_generate_chunk(); // Generate one chunk per render
+    terrain.copy_generated_chunks(32); // Copy one chunk per render
 
     /* Render solid objects */
     for(auto& [u, v] : chunks_to_render)
@@ -93,10 +93,10 @@ void Renderer::render_terrain(Terrain& terrain, Skybox& skybox)
     /* Render transparent objects */
     for(auto& [u, v] : chunks_to_render)
     {
-            Chunk& chunk = terrain.get_chunk(u, v);
+        Chunk& chunk = terrain.get_chunk(u, v);
 
-            std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
-            if(chunk.is_visible_transparent_faces()) render_transparent_chunk(chunk);
+        std::vector<Face> blocks_to_render = terrain.get_visible_faces(u, v);
+        if(chunk.is_visible_transparent_faces()) render_transparent_chunk(chunk);
     }
 }
 
